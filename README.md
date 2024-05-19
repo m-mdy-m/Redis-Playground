@@ -16,7 +16,7 @@ The repository is structured into several folders, each focusing on a specific a
 * **administration:**  This section covers Redis management tools, client interaction (e.g., redis-cli,client libraries), and explores Redis persistence options.
 * **advanced:** Here, you'll find deeper dives into topics like Redis replication, clusters, Lua scripting for server-side execution, RediSearch for full-text search capabilities, RedisBloom for creating space-efficient filters, and RedisJSON for working with JSON data structures within Redis.
 
-Within each folder, you'll find markdown files (`.md`) containing explanations, code snippets, and additional resources. The code examples primarily use Python, but feel free to adapt them to your preferred language.
+Within each folder, you'll find markdown files (`.md`) containing explanations, code snippets, and additional resources.
 
 ### Contributing
 
