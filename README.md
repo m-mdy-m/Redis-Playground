@@ -27,4 +27,5 @@ While this repository is primarily for my personal learning, feel free to explor
 This repository is currently under [insert your preferred license here] ([https://github.com/github/choosealicense.com](https://github.com/github/choosealicense.com)).
 
 
-I hope this project proves to be a valua
+
+I hope this project proves to be a valuable resource for your Redis learning journey as well!
