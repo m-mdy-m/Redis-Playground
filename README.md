@@ -24,7 +24,7 @@ While this repository is primarily for my personal learning, feel free to explor
 
 ### License
 
-This repository is currently under MIT .
+This repository is currently licensed under the MIT license.
 
 
 
