@@ -33,6 +33,14 @@ redis-cli
 127.0.0.1:6379> exit
 ```
 
+**PING Command**
+
+```bash
+127.0.0.1:6379> PING [Message]
+```
+* Checks if the Redis server is alive and responsive.
+* Optionally, sends a custom message along with the ping and returns the same message back.
+
 - This command exits the `redis-cli` and closes your connection to the server.
 
 **Restarting the Server (Linux with systemd):**
@@ -50,5 +58,3 @@ redis-cli HELP <command_name>
 ```
 
 - This command provides detailed information about a specific Redis command.
-
-
