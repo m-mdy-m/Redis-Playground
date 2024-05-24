@@ -66,3 +66,46 @@ The `SET` and `GET` commands are the fundamental building blocks for interacting
 
 * **Expiration:** You can set expiration times on keys using commands like `EXPIRE`. This allows for automatic data removal after a specified period, helping to manage data freshness and prevent clutter.
 * **Data Types and Performance:** Choosing the right data type for your values significantly impacts performance. Lists are efficient for adding/removing elements at the beginning or end, while Hashes excel at retrieving specific fields within a complex object.
+
+## How Redis Handle Key Expirations
+
+### Normal Keys
+- **Without Expirations**: When you create a key in Redis without an expiration time, it will persist indefinitely until explicitly deleted. For instance, if you run:
+  ```sh
+  SET course "redis"
+  ```
+  The key `course` will exist in Redis forever unless you delete it manually.
+
+### Keys with Expirations
+- **Expiration Storage**: Redis stores expiration times as UNIX timestamps in milliseconds. This means it records the exact moment when the key should expire.
+
+- **Expiration Process**: Keys with expiration times are handled through two main mechanisms: passive and active expiration.
+
+### Passive Expiration
+- **Mechanism**: Passive expiration happens when a client attempts to access a key. If the key has expired, Redis will recognize this and delete the key, returning a "key not found" response to the client.
+- **Example**:
+  ```sh
+  SET course "redis" EX 10
+  ```
+  If you try to access the key `course` after 10 seconds, Redis will passively delete it and return nil.
+
+### Active Expiration
+- **Mechanism**: To ensure that expired keys are removed in a timely manner even if they are not accessed, Redis employs an active expiration mechanism that runs periodically.
+
+- **Process**:
+  1. **Frequency**: Redis performs active expiration checks 10 times per second.
+  2. **Sampling**: During each check, Redis randomly selects 20 keys with expiration times.
+  3. **Deletion**: It deletes all keys found to be expired.
+  4. **Threshold Check**: If more than 25% of the sampled keys are expired, Redis repeats the process to ensure more expired keys are cleared out.
+
+- **Optimization**: This mechanism helps in preventing a sudden burst of deletions that could impact performance by spreading the load evenly over time.
+
+### Summary of Key Expiration Handling
+- **Normal Keys**: Persist indefinitely unless manually deleted.
+- **Expired Keys**:
+  - Stored with expiration times as UNIX timestamps in milliseconds.
+  - **Passive Expiration**: Key is deleted upon access if it has expired.
+  - **Active Expiration**: Redis periodically checks and deletes expired keys in batches, ensuring system efficiency.
+
+
+
