@@ -213,3 +213,29 @@ PEXPIRE name 900000  ; Might return "0" if "name" already has a longer TTL
 * **Atomicity:** `PEXPIRE` guarantees an atomic operation, meaning the key creation and expiration setting happen as a single, indivisible step. This can be useful in scenarios where you want to ensure the key doesn't exist before setting the expiration.
 * **Conditional Update:** `PEXPIRE` won't update the expiration if the key already exists and the provided value is greater than the current TTL. 
 * **Return Value:** `PEXPIRE` provides a success indicator ("1") or an indication that the update wasn't applied ("0"), while `PX` simply returns "OK" on success.
+
+---
+**`PERSIST` key**
+
+* **Function:** Removes any existing expiration timeout from a key, turning it into a persistent key.
+* **Argument:**
+    * `key`: The key for which you want to remove the expiration (string).
+* **Returns:**
+    * Simple string reply stating "1" if the expiration was successfully removed.
+    * Simple string reply stating "0" if the key does not exist.
+
+**Example:**
+
+```bash
+SET name "Alice"
+EXPIRE name 300  ; Set expiration for "name" to 300 seconds
+
+; Later...
+PERSIST name
+
+TTL name  ; Should now return -1 (key exists but has no expiration)
+```
+
+**Important Notes:**
+
+* `PERSIST` only affects keys that currently have an expiration set. It has no effect on keys that are already persistent (no TTL).
