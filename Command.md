@@ -66,6 +66,8 @@ redis-cli HELP <command_name>
 
 
 ## Key-Value Operations:
+
+### Setting and Getting Values:
 **`SET` key value**
 
 * **Function:** Creates a new key-value pair in the Redis database.
@@ -73,6 +75,7 @@ redis-cli HELP <command_name>
     * `key`: A unique identifier for your data (string).
     * `value`: The data you want to store (can be a string, list, hash, set, or other supported data type).
 * **Example:** `SET name "Alice"` stores the string "Alice" under the key "name".
+---
 
 **`GET` key**
 
@@ -80,6 +83,8 @@ redis-cli HELP <command_name>
 * **Argument:**
     * `key`: The key whose value you want to retrieve (string).
 * **Example:** `GET name` would return "Alice" if the previous `SET` command was executed.
+### Key Management:
+---
 
 **`DEL` key**
 
@@ -88,6 +93,7 @@ redis-cli HELP <command_name>
     * `key`: The key(s) to delete (can be a single key or multiple keys specified as arguments).
 * **Example:** `DEL name` would remove the key "name" and its associated value.
 * **Example-1** `DEL key1 key2 key3` 
+---
 
 **`EXISTS` key**
 
@@ -101,6 +107,8 @@ redis-cli HELP <command_name>
   ```bash
   EXISTS name
   ```
+
+### Expiration Control:
 
 **`EXPIRE` key `seconds`**
 
@@ -126,6 +134,7 @@ redis-cli HELP <command_name>
   EXPIRE name 300 
   TTL name
   ```
+---
 
 **`PTTL` key**
 
@@ -153,6 +162,7 @@ The primary difference lies in the unit of the returned value. `TTL` provides th
 * **Important Notes:**
   * `PTTL` works similarly to `TTL`, but the return value is in milliseconds instead of seconds.
   * It applies to keys with an existing expiration. It will return -1 for keys without an expiration.
+---
 
 **`PX` key milliseconds**
 
@@ -176,3 +186,30 @@ PX name 1800000  ; Set expiration for "name" to 1800000 milliseconds (30 minutes
 * **Resolution:** `PX` offers more precise control over expiration times in smaller increments (milliseconds).
 * **Important Notes:**
   * Just like `EXPIRE`, `PX` only affects keys with an existing expiration. It won't change the behavior of keys without a TTL set.
+---
+
+**`PEXPIRE` key milliseconds**
+
+* **Function:** Sets a time-to-live (TTL) for a key in milliseconds, similar to `PX` but acts like an atomic (indivisible) operation.
+* **Arguments:**
+    * `key`: The key for which you want to set an expiration (string).
+    * `milliseconds`: The duration in milliseconds before the key expires (positive integer).
+* **Returns:**
+    * Simple string reply stating "1" if the key was created or the expiration was updated successfully.
+    * Simple string reply stating "0" if the key already exists and its TTL was not updated due to the new value being greater than the existing expiration (similar to the behavior of the SETNX command for setting values conditionally).
+
+**Example:**
+
+```bash
+SET name "Alice"  ; Assuming the key "name" does not exist yet
+PEXPIRE name 1800000  ; Set expiration for "name" to 1800000 milliseconds (30 minutes)
+
+; Try setting a shorter expiration if the key already exists
+PEXPIRE name 900000  ; Might return "0" if "name" already has a longer TTL
+```
+
+**Key Differences between `PEXPIRE` and `PX`:**
+
+* **Atomicity:** `PEXPIRE` guarantees an atomic operation, meaning the key creation and expiration setting happen as a single, indivisible step. This can be useful in scenarios where you want to ensure the key doesn't exist before setting the expiration.
+* **Conditional Update:** `PEXPIRE` won't update the expiration if the key already exists and the provided value is greater than the current TTL. 
+* **Return Value:** `PEXPIRE` provides a success indicator ("1") or an indication that the update wasn't applied ("0"), while `PX` simply returns "OK" on success.
