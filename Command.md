@@ -87,6 +87,7 @@ redis-cli HELP <command_name>
 * **Argument:**
     * `key`: The key(s) to delete (can be a single key or multiple keys specified as arguments).
 * **Example:** `DEL name` would remove the key "name" and its associated value.
+* **Example-1** `DEL key1 key2 key3` 
 
 **`EXISTS` key**
 
