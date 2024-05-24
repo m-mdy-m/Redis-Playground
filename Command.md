@@ -83,9 +83,8 @@ redis-cli HELP <command_name>
 * **Argument:**
     * `key`: The key whose value you want to retrieve (string).
 * **Example:** `GET name` would return "Alice" if the previous `SET` command was executed.
-### Key Management:
----
 
+### Key Management:
 **`DEL` key**
 
 * **Function:** Deletes one or more keys from the Redis database.
@@ -107,6 +106,103 @@ redis-cli HELP <command_name>
   ```bash
   EXISTS name
   ```
+---
+**`RENAME` key newkey**
+
+* **Function:** Renames a key to a new name.
+* **Arguments:**
+    * `key`: The existing key name that you want to rename (string).
+    * `newkey`: The new name to assign to the key (string).
+* **Returns:**
+    * Simple string reply stating "OK" if the key was successfully renamed.
+    * Error if `key` does not exist or `key` is equal to `newkey`.
+* **Example:**
+  ```bash
+  SET oldkey "value"
+  RENAME oldkey newkey  ; Renames "oldkey" to "newkey"
+  GET newkey  ; Retrieves the value stored under the new key name
+  ```
+
+**Important Notes:**
+* The `RENAME` command changes the name of `key` to `newkey`.
+* If `newkey` already exists, it will be overwritten by `key`.
+* Atomic operation: Renaming a key with `RENAME` is atomic, meaning it either completes successfully or does not change the database state at all.
+
+---
+**`RENAMENX` key newkey**
+
+* **Function:** Renames a key to a new name, but only if the new key name does not already exist.
+* **Arguments:**
+    * `key`: The existing key name that you want to rename (string).
+    * `newkey`: The new name to assign to the key (string).
+* **Returns:**
+    * 1 if the key was successfully renamed.
+    * 0 if the new key name already exists and the rename did not occur.
+    * Error if `key` does not exist or `key` is equal to `newkey`.
+* **Example:**
+  ```bash
+  SET oldkey "value"
+  SET anotherkey "othervalue"
+  
+  RENAMENX oldkey newkey  ; Renames "oldkey" to "newkey" since "newkey" does not exist
+  RENAMENX anotherkey newkey  ; Fails because "newkey" already exists
+  ```
+
+**Important Notes:**
+* The `RENAMENX` command only renames the key if `newkey` does not already exist.
+* This command ensures that existing keys are not accidentally overwritten.
+* Use `RENAMENX` to safely rename keys when there is a risk of key name conflicts.
+---
+**`UNLINK` key [key ...]**
+
+* **Function:** Asynchronously deletes one or more keys from the Redis database. Unlike `DEL`, which blocks the server while performing the deletion, `UNLINK` allows Redis to continue processing other commands.
+* **Arguments:**
+    * `key`: The key(s) to delete. Multiple keys can be specified.
+* **Returns:**
+    * The number of keys that were successfully removed.
+* **Example:**
+  ```bash
+  SET key1 "value1"
+  SET key2 "value2"
+  UNLINK key1 key2  ; Asynchronously removes "key1" and "key2"
+  ```
+
+**Important Notes:**
+* The `UNLINK` command is useful for deleting large keys or a large number of keys without blocking the Redis server.
+* While `DEL` performs the deletion immediately and blocks until the operation is complete, `UNLINK` delegates the deletion to a background thread, allowing Redis to continue handling other operations.
+* Use `UNLINK` to improve the responsiveness of your Redis server, especially when dealing with keys that hold large data structures or when performing batch deletions.
+* The command is part of Redis' effort to provide non-blocking alternatives to time-consuming operations, enhancing overall performance and scalability.
+
+---
+**`TYPE` key**
+
+* **Function:** Returns the data type of the value stored at the specified key.
+* **Arguments:**
+    * `key`: The key for which you want to check the data type (string).
+* **Returns:**
+    * A string indicating the type of the value stored at the key. Possible return values include:
+        * `string` for string values.
+        * `list` for list values.
+        * `set` for set values.
+        * `zset` for sorted set values.
+        * `hash` for hash values.
+        * `stream` for stream values.
+        * `none` if the key does not exist.
+* **Example:**
+  ```bash
+  SET name "Alice"
+  TYPE name  ; Returns "string"
+  
+  LPUSH mylist "item"
+  TYPE mylist  ; Returns "list"
+  
+  TYPE nonexistingkey  ; Returns "none"
+  ```
+
+**Important Notes:**
+* The `TYPE` command helps you understand the kind of data structure associated with a given key.
+* This is useful for debugging and when interacting with Redis keys in a dynamic application environment where the type of data stored under certain keys may vary.
+* Knowing the data type is crucial when performing operations that are specific to certain types, such as list operations on a key that stores a list or set operations on a key that stores a set.
 
 ### Expiration Control:
 
@@ -321,68 +417,3 @@ OK" if the command executed successfully.
 * Typically used in scenarios where a complete reset of the Redis instance is required.
 
 ---
-**`RENAME` key newkey**
-
-* **Function:** Renames a key to a new name.
-* **Arguments:**
-    * `key`: The existing key name that you want to rename (string).
-    * `newkey`: The new name to assign to the key (string).
-* **Returns:**
-    * Simple string reply stating "OK" if the key was successfully renamed.
-    * Error if `key` does not exist or `key` is equal to `newkey`.
-* **Example:**
-  ```bash
-  SET oldkey "value"
-  RENAME oldkey newkey  ; Renames "oldkey" to "newkey"
-  GET newkey  ; Retrieves the value stored under the new key name
-  ```
-
-**Important Notes:**
-* The `RENAME` command changes the name of `key` to `newkey`.
-* If `newkey` already exists, it will be overwritten by `key`.
-* Atomic operation: Renaming a key with `RENAME` is atomic, meaning it either completes successfully or does not change the database state at all.
-
----
-**`RENAMENX` key newkey**
-
-* **Function:** Renames a key to a new name, but only if the new key name does not already exist.
-* **Arguments:**
-    * `key`: The existing key name that you want to rename (string).
-    * `newkey`: The new name to assign to the key (string).
-* **Returns:**
-    * 1 if the key was successfully renamed.
-    * 0 if the new key name already exists and the rename did not occur.
-    * Error if `key` does not exist or `key` is equal to `newkey`.
-* **Example:**
-  ```bash
-  SET oldkey "value"
-  SET anotherkey "othervalue"
-  
-  RENAMENX oldkey newkey  ; Renames "oldkey" to "newkey" since "newkey" does not exist
-  RENAMENX anotherkey newkey  ; Fails because "newkey" already exists
-  ```
-
-**Important Notes:**
-* The `RENAMENX` command only renames the key if `newkey` does not already exist.
-* This command ensures that existing keys are not accidentally overwritten.
-* Use `RENAMENX` to safely rename keys when there is a risk of key name conflicts.
----
-**`UNLINK` key [key ...]**
-
-* **Function:** Asynchronously deletes one or more keys from the Redis database. Unlike `DEL`, which blocks the server while performing the deletion, `UNLINK` allows Redis to continue processing other commands.
-* **Arguments:**
-    * `key`: The key(s) to delete. Multiple keys can be specified.
-* **Returns:**
-    * The number of keys that were successfully removed.
-* **Example:**
-  ```bash
-  SET key1 "value1"
-  SET key2 "value2"
-  UNLINK key1 key2  ; Asynchronously removes "key1" and "key2"
-  ```
-
-**Important Notes:**
-* The `UNLINK` command is useful for deleting large keys or a large number of keys without blocking the Redis server.
-* While `DEL` performs the deletion immediately and blocks until the operation is complete, `UNLINK` delegates the deletion to a background thread, allowing Redis to continue handling other operations.
-* Use `UNLINK` to improve the responsiveness of your Redis server, especially when dealing with keys that hold large data structures or when performing batch deletions.
-* The command is part of Redis' effort to provide non-blocking alternatives to time-consuming operations, enhancing overall performance and scalability.
