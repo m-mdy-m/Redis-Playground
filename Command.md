@@ -239,3 +239,83 @@ TTL name  ; Should now return -1 (key exists but has no expiration)
 **Important Notes:**
 
 * `PERSIST` only affects keys that currently have an expiration set. It has no effect on keys that are already persistent (no TTL).
+
+---
+### Database Management
+
+**`SELECT` index**
+
+* **Function:** Switches the connection to a different Redis database.
+* **Argument:**
+    * `index`: The zero-based index of the database to select (integer).
+* **Returns:**
+    * Simple string reply stating "OK" if the command executed successfully.
+* **Example:**
+  ```bash
+  SELECT 1  ; Switch to the second database (index 1)
+  ```
+
+**Important Notes:**
+* Redis supports multiple databases, which are identified by index numbers starting from 0.
+* The `SELECT` command changes the current database for the connection. Subsequent commands will operate on the selected database until another `SELECT` command is issued.
+* By default, Redis uses database 0 if no `SELECT` command is issued.
+
+**`KEYS` pattern**
+
+* **Function:** Finds all keys matching a given pattern in the Redis database.
+* **Argument:**
+    * `pattern`: The pattern to match keys against (string). Wildcards supported:
+        * `*`: Matches zero or more characters.
+        * `?`: Matches exactly one character.
+        * `[abc]`: Matches any one of the characters in the brackets.
+* **Returns:**
+    * An array of keys that match the given pattern.
+* **Example:**
+  ```bash
+  SET name "Alice"
+  SET age "30"
+  SET address "123 Main St"
+  
+  KEYS *  ; Returns all keys: ["name", "age", "address"]
+  KEYS a*  ; Returns keys starting with 'a': ["age", "address"]
+  KEYS ?ame  ; Returns keys with one character followed by "ame": ["name"]
+  ```
+
+**Important Notes:**
+* The `KEYS` command can be slow if the database contains a large number of keys, as it scans the entire keyspace.
+* It is generally recommended to use `SCAN` for pattern matching in production environments to avoid performance issues.
+* `KEYS` is useful for debugging and development, but should be used with caution in production due to its potential impact on performance.
+
+**`FLUSHDB`**
+
+* **Function:** Deletes all keys from the currently selected Redis database.
+* **Returns:**
+    * Simple string reply stating "
+
+OK" if the command executed successfully.
+* **Example:**
+  ```bash
+  FLUSHDB  ; This command will remove all keys from the current database
+  ```
+
+**Important Notes:**
+* `FLUSHDB` only affects the current database, not all databases in Redis.
+* Use with caution, as this command will permanently remove all data in the selected database.
+* Useful in scenarios where you need to clear all data quickly, such as resetting the database state during development or testing.
+
+---
+
+**`FLUSHALL`**
+
+* **Function:** Deletes all keys from all databases in the Redis instance.
+* **Returns:**
+    * Simple string reply stating "OK" if the command executed successfully.
+* **Example:**
+  ```bash
+  FLUSHALL  ; This command will remove all keys from all databases in the Redis instance
+  ```
+
+**Important Notes:**
+* `FLUSHALL` affects every database in the Redis instance, not just the currently selected one.
+* Use with extreme caution, as this command will permanently remove all data across all databases.
+* Typically used in scenarios where a complete reset of the Redis instance is required.

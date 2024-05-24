@@ -108,4 +108,88 @@ The `SET` and `GET` commands are the fundamental building blocks for interacting
   - **Active Expiration**: Redis periodically checks and deletes expired keys in batches, ensuring system efficiency.
 
 
+## Key Space in Redis
 
+In Redis, the concept of key space is akin to database namespaces or schemas found in other database systems. It allows for organizational separation within a Redis instance, enabling better management and isolation of data. Here’s a detailed explanation:
+
+### Key Space Overview
+
+- **Isolation**: Each key space in Redis functions as an isolated database, allowing you to use the same key names in different key spaces without conflicts.
+- **Indexing**: Key spaces are indexed starting from 0. By default, a Redis instance starts with 16 key spaces (databases), but this number can be configured.
+
+### Managing Keys Across Key Spaces
+
+**Example Scenario:**
+1. **Set a Key in Key Space 0**:
+   ```bash
+   SELECT 0         # Switch to key space 0
+   SET key1 value1  # Set key1 with value1
+   GET key1         # Returns value1
+   ```
+
+2. **Set a Key with the Same Name in Key Space 1**:
+   ```bash
+   SELECT 1         # Switch to key space 1
+   SET key1 value2  # Set key1 with value2
+   GET key1         # Returns value2
+   ```
+
+3. **Switch Back to Key Space 0**:
+   ```bash
+   SELECT 0         # Switch back to key space 0
+   GET key1         # Returns value1
+   ```
+
+### Key Space Commands
+
+#### `SELECT index`
+
+- **Function**: Switches the connection to a different key space (database).
+- **Arguments**:
+  - `index`: The zero-based index of the key space to select (integer).
+- **Returns**: Simple string reply "OK" if the command is executed successfully.
+- **Example**:
+  ```bash
+  SELECT 1  # Switch to key space 1
+  ```
+
+#### `KEYS pattern`
+
+- **Function**: Finds all keys matching a given pattern in the currently selected key space.
+- **Arguments**:
+  - `pattern`: The pattern to match keys against (string). Wildcards supported:
+    - `*`: Matches zero or more characters.
+    - `?`: Matches exactly one character.
+    - `[abc]`: Matches any one of the characters in the brackets.
+- **Returns**: An array of keys that match the given pattern.
+- **Example**:
+  ```bash
+  KEYS *  # Returns all keys in the current key space
+  ```
+
+#### `FLUSHDB`
+
+- **Function**: Deletes all keys from the currently selected key space.
+- **Returns**: Simple string reply "OK" if the command executed successfully.
+- **Example**:
+  ```bash
+  FLUSHDB  # This command will remove all keys from the current key space
+  ```
+
+### Important Considerations
+
+1. **Isolation**: Keys in one key space are entirely separate from keys in another. You cannot directly link or join keys across different key spaces.
+2. **Use Cases**:
+   - **Testing Environments**: Different key spaces can be used for development, testing, and production within the same Redis instance.
+   - **Multi-Tenant Applications**: Separate key spaces for different tenants to ensure data isolation.
+3. **Limitations**: Unlike SQL databases, where you can join tables across schemas, Redis key spaces do not support linking keys across different key spaces.
+
+### Advantages of Key Spaces
+
+- **Data Management**: Allows for better organization and management of data by segregating different datasets into separate key spaces.
+- **Operational Efficiency**: Facilitates operations like clearing a specific key space (`FLUSHDB`) without affecting others.
+- **Security and Isolation**: Enhances data security and isolation, which is crucial for multi-tenant systems.
+
+### Summary
+
+Redis key spaces provide a powerful way to manage and isolate data within a single Redis instance. By understanding and leveraging key space commands such as `SELECT`, `KEYS`, and `FLUSHDB`, you can effectively manage and organize your Redis databases, ensuring that your data is well-structured and efficiently accessed.
