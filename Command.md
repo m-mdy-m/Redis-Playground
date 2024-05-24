@@ -319,3 +319,25 @@ OK" if the command executed successfully.
 * `FLUSHALL` affects every database in the Redis instance, not just the currently selected one.
 * Use with extreme caution, as this command will permanently remove all data across all databases.
 * Typically used in scenarios where a complete reset of the Redis instance is required.
+
+**`RENAME` key newkey**
+
+* **Function:** Renames a key to a new name.
+* **Arguments:**
+    * `key`: The existing key name that you want to rename (string).
+    * `newkey`: The new name to assign to the key (string).
+* **Returns:**
+    * Simple string reply stating "OK" if the key was successfully renamed.
+    * Error if `key` does not exist or `key` is equal to `newkey`.
+* **Example:**
+  ```bash
+  SET oldkey "value"
+  RENAME oldkey newkey  ; Renames "oldkey" to "newkey"
+  GET newkey  ; Retrieves the value stored under the new key name
+  ```
+
+**Important Notes:**
+* The `RENAME` command changes the name of `key` to `newkey`.
+* If `newkey` already exists, it will be overwritten by `key`.
+* Atomic operation: Renaming a key with `RENAME` is atomic, meaning it either completes successfully or does not change the database state at all.
+* Use caution with renaming keys, especially in production environments where other processes may depend on key names.
