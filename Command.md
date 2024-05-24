@@ -126,3 +126,25 @@ redis-cli HELP <command_name>
   EXPIRE name 300 
   TTL name
   ```
+**`PX` key milliseconds**
+
+* **Function:** Sets a time-to-live (TTL) for a key in milliseconds, similar to `EXPIRE` but with a finer-grained control over the expiration time.
+* **Arguments:**
+    * `key`: The key for which you want to set an expiration (string).
+    * `milliseconds`: The duration in milliseconds before the key expires (positive integer).
+* **Returns:**
+    * Simple string reply stating "OK" if the command executed successfully.
+
+**Example:**
+
+```bash
+SET name "Alice"
+PX name 1800000  ; Set expiration for "name" to 1800000 milliseconds (30 minutes)
+```
+
+**Key Differences between `PX` and `EXPIRE`:**
+
+* **Time Unit:** `PX` uses milliseconds for expiration, while `EXPIRE` uses seconds.
+* **Resolution:** `PX` offers more precise control over expiration times in smaller increments (milliseconds).
+* **Important Notes:**
+  * Just like `EXPIRE`, `PX` only affects keys with an existing expiration. It won't change the behavior of keys without a TTL set.
