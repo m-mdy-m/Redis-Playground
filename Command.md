@@ -126,6 +126,34 @@ redis-cli HELP <command_name>
   EXPIRE name 300 
   TTL name
   ```
+
+**`PTTL` key**
+
+* **Function:** Checks the remaining time to live (TTL) for a key that has an expiration set, in milliseconds.
+* **Argument:**
+    * `key`: The key for which you want to retrieve the remaining TTL (string).
+* **Returns:**
+    * An integer representing the remaining time in milliseconds before the key expires:
+        * Positive value: Indicates the number of milliseconds remaining.
+        * -2: The key does not exist.
+        * -1: The key exists but does not have an expiration set.
+
+**Example:**
+
+```
+SET name "Alice"
+EXPIRE name 300  ; Set expiration for "name" to 300 seconds
+
+; Check remaining TTL in milliseconds after some time
+PTTL name
+```
+**Key Difference between `TTL` and `PTTL`:**
+
+The primary difference lies in the unit of the returned value. `TTL` provides the remaining time in seconds, while `PTTL` offers the information in milliseconds.
+* **Important Notes:**
+  * `PTTL` works similarly to `TTL`, but the return value is in milliseconds instead of seconds.
+  * It applies to keys with an existing expiration. It will return -1 for keys without an expiration.
+
 **`PX` key milliseconds**
 
 * **Function:** Sets a time-to-live (TTL) for a key in milliseconds, similar to `EXPIRE` but with a finer-grained control over the expiration time.
