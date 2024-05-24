@@ -366,3 +366,23 @@ OK" if the command executed successfully.
 * The `RENAMENX` command only renames the key if `newkey` does not already exist.
 * This command ensures that existing keys are not accidentally overwritten.
 * Use `RENAMENX` to safely rename keys when there is a risk of key name conflicts.
+---
+**`UNLINK` key [key ...]**
+
+* **Function:** Asynchronously deletes one or more keys from the Redis database. Unlike `DEL`, which blocks the server while performing the deletion, `UNLINK` allows Redis to continue processing other commands.
+* **Arguments:**
+    * `key`: The key(s) to delete. Multiple keys can be specified.
+* **Returns:**
+    * The number of keys that were successfully removed.
+* **Example:**
+  ```bash
+  SET key1 "value1"
+  SET key2 "value2"
+  UNLINK key1 key2  ; Asynchronously removes "key1" and "key2"
+  ```
+
+**Important Notes:**
+* The `UNLINK` command is useful for deleting large keys or a large number of keys without blocking the Redis server.
+* While `DEL` performs the deletion immediately and blocks until the operation is complete, `UNLINK` delegates the deletion to a background thread, allowing Redis to continue handling other operations.
+* Use `UNLINK` to improve the responsiveness of your Redis server, especially when dealing with keys that hold large data structures or when performing batch deletions.
+* The command is part of Redis' effort to provide non-blocking alternatives to time-consuming operations, enhancing overall performance and scalability.
