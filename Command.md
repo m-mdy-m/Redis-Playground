@@ -97,6 +97,10 @@ redis-cli HELP <command_name>
 * **Returns:**
     * 1 if the key exists.
     * 0 if the key does not exist.
+* **Example**
+  ```bash
+  EXISTS name
+  ```
 
 **`EXPIRE` key `seconds`**
 
@@ -106,33 +110,19 @@ redis-cli HELP <command_name>
     * `seconds`: The duration in seconds before the key expires (integer).
 * **Example:** `EXPIRE name 300` would set the key "name" to expire after 300 seconds (5 minutes).
 
-**`MGET` key1 key2 ... keyN**
+**`TTL` key**
 
-* **Function:** Retrieves the values of multiple keys in a single command.
-* **Arguments:**
-    * `key1`, `key2`, ..., `keyN`: A list of keys whose values you want to retrieve (strings).
-* **Returns:**
-    * A list of values corresponding to the order of the provided keys.
-
-**`SETNX` key value**
-
-* **Function:** Sets the value of a key only if the key does not already exist in the database.
-* **Arguments:**
-    * `key`: The key to set (string).
-    * `value`: The value to store (can be any supported data type).
-* **Returns:**
-    * 1 if the key was successfully set.
-    * 0 if the key already existed.
-
-**`INCR` key**
-
-* **Function:** Increments the value of a key by 1 (assuming the key stores a numeric value).
+* **Function:** Checks the remaining time to live (TTL) for a key that has an expiration set.
 * **Argument:**
-    * `key`: The key whose value you want to increment (string).
-* **Example:** Assuming the key "count" has the value 5, `INCR count` would increment it to 6.
-
-**`DECR` key**
-
-* **Function:** Decrements the value of a key by 1 (assuming the key stores a numeric value).
-* **Argument:**
-    * `key`: The key whose value you want to decrement (string).
+    * `key`: The key for which you want to retrieve the remaining TTL (string).
+* **Returns:**
+    * An integer representing the remaining time in seconds before the key expires:
+        * Positive value: Indicates the number of seconds remaining.
+        * -2: The key does not exist.
+        * -1: The key exists but does not have an expiration set.
+*  **Example:**
+  ```bash
+  SET name "Alice"
+  EXPIRE name 300 
+  TTL name
+  ```
