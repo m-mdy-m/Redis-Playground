@@ -320,6 +320,7 @@ OK" if the command executed successfully.
 * Use with extreme caution, as this command will permanently remove all data across all databases.
 * Typically used in scenarios where a complete reset of the Redis instance is required.
 
+---
 **`RENAME` key newkey**
 
 * **Function:** Renames a key to a new name.
@@ -340,4 +341,28 @@ OK" if the command executed successfully.
 * The `RENAME` command changes the name of `key` to `newkey`.
 * If `newkey` already exists, it will be overwritten by `key`.
 * Atomic operation: Renaming a key with `RENAME` is atomic, meaning it either completes successfully or does not change the database state at all.
-* Use caution with renaming keys, especially in production environments where other processes may depend on key names.
+
+---
+**`RENAMENX` key newkey**
+
+* **Function:** Renames a key to a new name, but only if the new key name does not already exist.
+* **Arguments:**
+    * `key`: The existing key name that you want to rename (string).
+    * `newkey`: The new name to assign to the key (string).
+* **Returns:**
+    * 1 if the key was successfully renamed.
+    * 0 if the new key name already exists and the rename did not occur.
+    * Error if `key` does not exist or `key` is equal to `newkey`.
+* **Example:**
+  ```bash
+  SET oldkey "value"
+  SET anotherkey "othervalue"
+  
+  RENAMENX oldkey newkey  ; Renames "oldkey" to "newkey" since "newkey" does not exist
+  RENAMENX anotherkey newkey  ; Fails because "newkey" already exists
+  ```
+
+**Important Notes:**
+* The `RENAMENX` command only renames the key if `newkey` does not already exist.
+* This command ensures that existing keys are not accidentally overwritten.
+* Use `RENAMENX` to safely rename keys when there is a risk of key name conflicts.
