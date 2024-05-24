@@ -66,4 +66,72 @@ redis-cli HELP <command_name>
 
 
 ## Key-Value Operations:
+**`SET` key value**
 
+* **Function:** Creates a new key-value pair in the Redis database.
+* **Arguments:**
+    * `key`: A unique identifier for your data (string).
+    * `value`: The data you want to store (can be a string, list, hash, set, or other supported data type).
+* **Example:** `SET name "Alice"` stores the string "Alice" under the key "name".
+
+**`GET` key**
+
+* **Function:** Retrieves the value associated with a specific key.
+* **Argument:**
+    * `key`: The key whose value you want to retrieve (string).
+* **Example:** `GET name` would return "Alice" if the previous `SET` command was executed.
+
+**`DEL` key**
+
+* **Function:** Deletes one or more keys from the Redis database.
+* **Argument:**
+    * `key`: The key(s) to delete (can be a single key or multiple keys specified as arguments).
+* **Example:** `DEL name` would remove the key "name" and its associated value.
+
+**`EXISTS` key**
+
+* **Function:** Checks if a specific key exists in the Redis database.
+* **Argument:**
+    * `key`: The key whose existence you want to verify (string).
+* **Returns:**
+    * 1 if the key exists.
+    * 0 if the key does not exist.
+
+**`EXPIRE` key `seconds`**
+
+* **Function:** Sets a TTL (Time To Live) value on a key, specifying when it should automatically expire and be removed from the database.
+* **Arguments:**
+    * `key`: The key for which you want to set an expiration (string).
+    * `seconds`: The duration in seconds before the key expires (integer).
+* **Example:** `EXPIRE name 300` would set the key "name" to expire after 300 seconds (5 minutes).
+
+**`MGET` key1 key2 ... keyN**
+
+* **Function:** Retrieves the values of multiple keys in a single command.
+* **Arguments:**
+    * `key1`, `key2`, ..., `keyN`: A list of keys whose values you want to retrieve (strings).
+* **Returns:**
+    * A list of values corresponding to the order of the provided keys.
+
+**`SETNX` key value**
+
+* **Function:** Sets the value of a key only if the key does not already exist in the database.
+* **Arguments:**
+    * `key`: The key to set (string).
+    * `value`: The value to store (can be any supported data type).
+* **Returns:**
+    * 1 if the key was successfully set.
+    * 0 if the key already existed.
+
+**`INCR` key**
+
+* **Function:** Increments the value of a key by 1 (assuming the key stores a numeric value).
+* **Argument:**
+    * `key`: The key whose value you want to increment (string).
+* **Example:** Assuming the key "count" has the value 5, `INCR count` would increment it to 6.
+
+**`DECR` key**
+
+* **Function:** Decrements the value of a key by 1 (assuming the key stores a numeric value).
+* **Argument:**
+    * `key`: The key whose value you want to decrement (string).
