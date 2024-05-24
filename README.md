@@ -10,6 +10,7 @@ This project isn't intended to be a single script; instead, it's a collection of
 
 The repository is structured into several folders, each focusing on a specific aspect of Redis:
 * **Introduction:** The Introduction folder covers Redis basics: what it is, what it does, it supports.
+* **managements** This folder how to manage data in redis (key & value) covers
 * **fundamentals:** This folder covers the core building blocks of Redis, including data structures (strings, lists, sets, hashes), sorted sets, hyperlogs, and the Pub/Sub messaging model.
 * **operations:** Here, you'll find explorations of functionalities like bulk data insertion using various commands and delve into Redis database design principles.
 * **protocol:** This section explains interacting with Redis through its protocol (RESP). 
