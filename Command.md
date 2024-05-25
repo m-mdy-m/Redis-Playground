@@ -226,6 +226,28 @@ redis-cli HELP <command_name>
     * **Key Creation:** If the key doesn't exist before using `INCR`, it will be automatically created with an initial value of 0 before being incremented.
     * **Overflow:** Since `INCR` operates on 64-bit signed integers, there's a maximum value it can reach. If the incremented value overflows this limit, an error will occur.
 ---
+**`INCRBY` key increment**
+
+* **Function:** Increments the numeric value stored at the specified key by a given amount.
+* **Arguments:**
+    * `key`: The key of the value to increment (string).
+    * `increment`: The amount by which to increment the value (integer).
+* **Returns:**
+    * The new value of the key after the increment (integer). If the key does not exist or contains a value of the wrong type (e.g., a string that cannot be parsed as a number), an error is returned.
+* **Example:**
+    ```bash
+    SET counter 10
+    INCRBY counter 5        ; Increments the value of "counter" by 5 (becomes 15)
+    GET counter        ; Returns 15 (the new value)
+    ```
+* **Important Notes:**
+    * `INCRBY` offers more flexibility than `INCR` by allowing you to specify the increment amount.
+    * It maintains the atomicity property, guaranteeing a consistent operation even in high-concurrency scenarios.
+    * Similar to `INCR`, `INCRBY` only works with numeric values. Using it on non-numeric keys will result in an error.
+* **Additional Considerations:**
+    * **Key Creation:** If the key doesn't exist before using `INCRBY`, it will be created automatically with an initial value of 0 before being incremented by the specified amount.
+    * **Overflow and Underflow:** As `INCRBY` deals with 64-bit signed integers, there are maximum and minimum limits. Overflow occurs if the incremented value surpasses the maximum limit, while underflow happens if the decremented value falls below the minimum limit. Both scenarios lead to errors.
+---
 **`DECR` key**
 
 * **Function:** Decrements the numeric value stored at the specified key by 1.
@@ -239,20 +261,38 @@ redis-cli HELP <command_name>
     DECR counter        ; Decrements the value of "counter" to 4
     GET counter        ; Returns 4 (the new value)
     ```
+* **Important Notes:**
+    * Like `INCR`, `DECR` is atomic, ensuring data consistency in high-traffic environments.
+    * It only operates on numeric values. Attempting to decrement a non-numeric key will result in an error.
+    * To decrement by a value other than 1, use the `DECRBY` command (explained later).
 
-**Important Notes:**
+* **Additional Considerations:**
 
-* Like `INCR`, `DECR` is atomic, ensuring data consistency in high-traffic environments.
-* It only operates on numeric values. Attempting to decrement a non-numeric key will result in an error.
-* To decrement by a value other than 1, use the `DECRBY` command (explained later).
+    * **Key Creation:** If the key doesn't exist before using `DECR`, it will be automatically created with an initial value of 0. This value will then be decremented by 1, resulting in a final value of -1.
+    * **Underflow:** Since `DECR` works with 64-bit signed integers, there's a minimum value it can reach. Decrementing a value below this limit will lead to an underflow error.
+---
+**`DECRBY` key decrement**
 
-
-**Additional Considerations:**
-
-* **Key Creation:** If the key doesn't exist before using `DECR`, it will be automatically created with an initial value of 0. This value will then be decremented by 1, resulting in a final value of -1.
-* **Underflow:** Since `DECR` works with 64-bit signed integers, there's a minimum value it can reach. Decrementing a value below this limit will lead to an underflow error.
-
-
+* **Function:** Decrements the numeric value stored at the specified key by a given amount.
+* **Arguments:**
+    * `key`: The key of the value to decrement (string).
+    * `decrement`: The amount by which to decrement the value (integer).
+* **Returns:**
+    * The new value of the key after the decrement (integer). If the key does not exist or contains a value of the wrong type (e.g., a string that cannot be parsed as a number), an error is returned.
+* **Example:**
+    ```bash
+    SET counter 20
+    DECRBY counter 7        ; Decrements the value of "counter" by 7 (becomes 13)
+    GET counter        ; Returns 13 (the new value)
+    ```
+* **Important Notes:**
+    * `DECRBY` provides fine-grained control by allowing you to specify the decrement amount.
+    * It adheres to the atomicity principle, ensuring data consistency even under high traffic.
+    * Just like `DECR`, `DECRBY` only operates on numeric values. Attempting to decrement a non-numeric key will result in an error.
+* **Additional Considerations:**
+    * **Key Creation:** If the key doesn't exist before using `DECRBY`, it will be created automatically with an initial value of 0. This value will then be decremented by the specified amount.
+    * **Underflow:** Remember that `DECRBY` works with 64-bit signed integers. There's a minimum value it can reach. Decrementing below this limit will lead to an underflow error.
+---
 ### Expiration Control:
 
 **`EXPIRE` key `seconds`**
