@@ -518,7 +518,41 @@ The choice between `SETEX` and `PSETEX` depends on the level of precision requir
     * Checking if a string is empty before performing operations on it.
     * Implementing string manipulation functions that require knowledge of the string's size.
     * Optimizing memory usage when dealing with large strings.
+---
+**`SCAN cursor [MATCH pattern] [COUNT count]`**
 
+* **Function:** Iterates over a collection of elements in the Redis database using a cursor-based approach. 
+* **Arguments:**
+    * `cursor`: This is a unique identifier returned by a previous `SCAN` call. It allows you to resume scanning from where you left off (discussed later). For the first scan, use `0` as the cursor.
+    * `MATCH pattern` (Optional): Filters the scan results to include only keys matching a specific pattern using the wildcard characters `*` (matches any sequence of characters) and `?` (matches a single character).
+    * `COUNT count` (Optional): Specifies the maximum number of key-value pairs to be returned in the current scan iteration. This helps control the amount of data retrieved in each call.
+* **Returns:**
+    * A list containing two elements:
+        * The new cursor value (string) to be used in the next `SCAN` call to continue iterating. When no more elements are available, the cursor will be `0`.
+        * An array of key-value pairs (where each element is itself an array with the key and its corresponding value).
+    * Error message if there are any issues with the arguments.
+* **Example:**
+  ```bash
+  # Scan all keys (no pattern or count specified)
+  SCAN 0  ; Returns cursor and an array of key-value pairs
+
+  # Scan keys matching the pattern "user*" and retrieve at most 2 entries
+  SCAN 0 MATCH "user*" COUNT 2  ; Returns cursor and an array with max 2 key-value pairs matching the pattern
+  ```
+
+**Important Notes:**
+
+* `SCAN` is a cursor-based iterator, meaning it retrieves results in chunks and provides a cursor to continue from the last retrieved element in subsequent calls. 
+* This approach is efficient for handling large datasets, as it avoids transferring the entire dataset at once.
+* `SCAN` works with different data types stored in Redis (keys for sets, lists, hashes, etc.). The returned value will be the data type of the key itself.
+
+**Additional Considerations:**
+
+* **Cursor Handling:** It's crucial to keep track of the cursor and use it in subsequent `SCAN` calls to continue iterating. When the cursor becomes `0`, there are no more elements to scan.
+* **Pattern Matching:** The optional `MATCH` argument allows you to filter the scan results based on a specific pattern. This can be helpful for retrieving keys within a specific namespace or category.
+* **Count Limit:** The optional `COUNT` argument helps control the number of key-value pairs returned in each scan iteration. This is beneficial for throttling data retrieval or breaking down large scans into smaller chunks.
+
+---
 ### Expiration Control:
 
 **`EXPIRE` key `seconds`**
