@@ -113,6 +113,46 @@ redis-cli HELP <command_name>
 * **Argument:**
     * `key`: The key whose value you want to retrieve (string).
 * **Example:** `GET name` would return "Alice" if the previous `SET` command was executed.
+---
+**`MGET` key1 [key2 key3 ...]**
+
+* **Function:** Retrieves the values of all the specified keys in a single atomic operation.
+* **Arguments:**
+  * `key1`, `key2`, `key3`, ...: A sequence of keys (strings) for which you want to retrieve the values.
+* **Returns:**
+  * An array reply, where each element in the array corresponds to the value retrieved for the respective key in the request order.
+  * If a key does not exist, the special value `nil` is returned in its place within the array.
+  * Error message if there are any issues with the arguments or the keys themselves.
+* **Example:**
+  ```bash
+  SET name "Alice"
+  SET age 30
+  SET city "New York"
+
+  MGET name age city non-existent-key  ; Requesting values for multiple keys
+  ```
+
+  This command might return an array reply like:
+
+  ```
+  1) "Alice"
+  2) "30"
+  3) "New York"
+  4) nil  ; Key "non-existent-key" doesn't exist, so nil is returned
+  ```
+
+**Important Notes:**
+
+* `MGET` is atomic, ensuring that all key retrievals happen as a single unit. This guarantees data consistency, even in high-traffic environments.
+* It's efficient for fetching multiple values simultaneously, especially when you need the values for these specific keys together.
+* `MGET` returns the values in the same order as the requested keys.
+
+
+**Additional Considerations:**
+
+* **Non-existent Keys:** As demonstrated in the example, `MGET` gracefully handles non-existent keys by returning `nil` in their place within the response array. This allows your application logic to deal with missing data appropriately.
+* **Data Types:** While primarily used with strings, `MGET` can retrieve values of any data type supported by Redis (lists, sets, etc.). However, your code should be prepared to handle the specific data type returned for each key.
+* **Alternative:** For retrieving a single key's value, use the `GET` command. `MGET` shines when you need to fetch values for multiple keys in one go.
 
 ### Key Management:
 **`DEL` key**
