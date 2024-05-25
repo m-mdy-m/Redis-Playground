@@ -164,7 +164,37 @@ redis-cli HELP <command_name>
 * **Index and Length:** The `index` specifies the starting point for the replacement. The length of the provided `value` determines how many characters are replaced. If the `value` is shorter than the existing content at the specified index, the remaining characters are left unchanged. Conversely, if the `value` is longer, it will overwrite subsequent characters in the original string.
 * **New Keys:** If the key doesn't exist before using `SETRANGE`, a new key is created with the provided `value`. The return value will be the string length of this newly created string (which is the length of the provided `value`).
 * **Out-of-Bounds Indices:** If the `index` is negative or greater than the length of the string, the behavior depends on the Redis version. In some cases, an error might be thrown, while in others, no replacement might occur. It's advisable to consult the Redis documentation for your specific version regarding edge cases.
+---
+**`SETEX` key seconds value**
 
+* **Function:** Sets the specified key to the given value and sets a timeout in seconds after which the key will be automatically deleted.
+* **Arguments:**
+    * `key`: The key of the value to be set (string).
+    * `seconds`: The duration in seconds for which the key will exist (positive integer).
+    * `value`: The value to be associated with the key (string or any data type supported by Redis).
+* **Returns:**
+    * Simple string reply stating "OK" if the key was successfully set with the timeout.
+    * Error message if there are any issues with the arguments or the key itself (e.g., invalid arguments, negative timeout value).
+* **Example:**
+  ```bash
+  SETEX temporary_data 60 "This is temporary data"
+  ```
+
+  This command sets the key "temporary_data" with the value "This is temporary data" and sets a timeout of 60 seconds. After 60 seconds, the key will be automatically removed from the Redis database.
+
+**Important Notes:**
+
+* `SETEX` combines setting a key-value pair with automatic expiration. It's a convenient way to store data that only needs to persist for a limited time.
+* The timeout is set in seconds. If you need expiration in milliseconds, use the `PSETEX` command (covered elsewhere).
+* `SETEX` is atomic, ensuring the key setting and expiration timer creation happen as a single unit.
+
+**Additional Considerations:**
+
+* **Key Overwrites:** If a key with the same name already exists, `SETEX` will overwrite the existing key's value and expiration time with the new values provided.
+* **Data Types:** While the example shows strings, `SETEX` can work with any data type supported by Redis. The data type of the `value` will determine how it's stored and interpreted.
+* **Alternatives:**
+    * Use `SET` for setting a key-value pair without expiration.
+    * Use `EXPIRE` to set an expiration time for an existing key.
 ---
 **`GET` key**
 
