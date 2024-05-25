@@ -120,6 +120,33 @@ LRANGE mylist -2 -1  ; Returns ["mango", "kiwi"] (last two elements)
 - When using negative indexes, `-1` refers to the last element, `-2` to the second-last element, and so on.
 
 
+### `LINDEX` key index
+**Function:** Retrieves the element at a specific index from a list stored in the Redis database.
 
+**Arguments:**
 
+- `key`: The name of the list you want to retrieve an element from (string).
+- `index`: A zero-based index indicating the position of the element you want to access (integer).
+  - `0`: Represents the first element in the list.
+  - Negative values can be used to count from the end of the list (e.g., `-1` for the last element).
 
+**Returns:**
+
+- A string containing the element at the specified index.
+  - If the key doesn't exist, the index is out of range, or the list is empty, `nil` is returned.
+
+**Example:**
+
+```
+LPUSH mylist "apple" "banana" "orange" "mango" "kiwi"
+LINDEX mylist 2  ; Returns "orange" (element at index 2)
+LINDEX mylist -1  ; Returns "kiwi" (last element)
+LINDEX mylist 10  ; Returns nil (index out of range)
+```
+
+**Important Notes:**
+
+- `LINDEX` provides a way to access individual elements within a list based on their position.
+- The index is zero-based, so the first element has an index of 0.
+- Negative indexes allow you to access elements from the end of the list, with `-1` referring to the last element.
+- If the index is out of range or the key doesn't exist, `LINDEX` returns `nil` to indicate an error.
