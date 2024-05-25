@@ -143,3 +143,31 @@
 **Key Difference from `DECRBY`:**
 
 While `DECRBY` specifically works with integer values, `DECRBYFLOAT` caters to floating-point numbers, offering more granular control for scenarios requiring precise decimal adjustments.
+
+---
+**`APPEND` key value**
+
+* **Function:** Appends the specified value to the end of the string value stored at the key.
+* **Arguments:**
+    * `key`: The key of the string to which you want to append data (string).
+    * `value`: The string value to append to the existing string (string).
+* **Returns:**
+    * The length of the string after the append operation (integer). If the key does not exist, the key is created as an empty string before the append operation.
+* **Example:**
+    ```bash
+    SET message "Hello"
+    APPEND message ", World!"    ; Appends ", World!" to the existing string
+    GET message                 ; Returns "Hello, World!"
+    ```
+
+**Important Notes:**
+
+* `APPEND` is specifically designed for string values. Attempting to use it with other data types will result in an error.
+* It's an atomic operation, meaning the entire process of reading the existing string, appending the new value, and writing the updated string happens as a single unit.
+* If the key doesn't exist before using `APPEND`, a new key is created with an empty string, and then the provided value is appended.
+
+
+**Additional Considerations:**
+
+* **Efficiency:** While `APPEND` is convenient for simple string concatenation, it might not be the most efficient approach for very large strings. Consider using other techniques like building the desired string from smaller parts and then setting the entire string at once for better performance with large datasets.
+* **Multiple Appends:** You can perform multiple `APPEND` operations on the same key to continuously add content to the string.
