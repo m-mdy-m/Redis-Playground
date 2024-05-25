@@ -76,7 +76,37 @@ redis-cli HELP <command_name>
     * `value`: The data you want to store (can be a string, list, hash, set, or other supported data type).
 * **Example:** `SET name "Alice"` stores the string "Alice" under the key "name".
 ---
+**`MSET` key1 value1 [key2 value2 ...]**
 
+* **Function:** Sets multiple key-value pairs in a single atomic operation.
+* **Arguments:**
+  * `key1`, `value1`, `key2`, `value2`, ...: A series of key-value pairs (strings) to be set. The number of arguments must be even, with each key followed by its corresponding value.
+* **Returns:**
+  * Simple string reply stating "OK" if all the key-value pairs were successfully set.
+  * Error message if there's a problem (e.g., invalid arguments, wrong number of arguments).
+* **Example:**
+  ```bash
+  MSET name "Alice" age 30 city "New York"
+  ```
+
+  This command sets the following key-value pairs:
+
+    - `name`: "Alice"
+    - `age`: "30"
+    - `city`: "New York"
+* **Important Notes:**
+  * `MSET` is atomic, meaning all key-value pairs are set together as a single unit. This ensures data consistency, even in high-concurrency scenarios.
+  * It's efficient for setting multiple key-value pairs simultaneously, especially when the keys and values are already prepared.
+  * Existing keys will be overwritten with the new values provided in the `MSET` command.
+
+
+**Additional Considerations:**
+
+* **Number of Arguments:** Remember that `MSET` requires an even number of arguments, with each key followed by its corresponding value. An odd number of arguments will result in an error.
+* **Data Types:** While `MSET` primarily works with strings, Redis allows setting different data types for each key-value pair as long as they are supported by Redis (strings, lists, sets, etc.). However, ensure your application logic handles the data types appropriately when retrieving the values later.
+* **Alternative:** For setting a single key-value pair, use the `SET` command. `MSET` is more efficient when dealing with multiple key-value pairs at once. 
+
+---
 **`GET` key**
 
 * **Function:** Retrieves the value associated with a specific key.
@@ -222,15 +252,12 @@ redis-cli HELP <command_name>
   NONEXISTING_KEY    ; This key doesn't exist
   STRLEN NONEXISTING_KEY  ; Returns 0 (length of the non-existent key)
   ```
+* **Important Notes:**
 
-**Important Notes:**
-
-* `STRLEN` only works with string values. Using it with other data types will result in an error.
-* It's a very lightweight and efficient operation, making it suitable for retrieving string lengths quickly.
-
-**Additional Considerations:**
-
-* **Understanding Length:** The returned length represents the number of bytes used to store the string value in Redis. This might differ from the perceived length if the string contains multi-byte characters depending on the character encoding used by Redis.
+    * `STRLEN` only works with string values. Using it with other data types will result in an error.
+    * It's a very lightweight and efficient operation, making it suitable for retrieving string lengths quickly.
+* **Additional Considerations:**
+    * **Understanding Length:** The returned length represents the number of bytes used to store the string value in Redis. This might differ from the perceived length if the string contains multi-byte characters depending on the character encoding used by Redis.
 * **Use Cases:** Knowing the string length is beneficial for various scenarios:
     * Checking if a string is empty before performing operations on it.
     * Implementing string manipulation functions that require knowledge of the string's size.
