@@ -77,7 +77,7 @@ LPUSH mylist "apple" "banana" "orange"  ; Inserts "apple", "banana", and "orange
 
 **Example:**
 
-```
+```bash
 RPUSH mylist "apple" "banana" "orange"  ; Appends "apple", "banana", and "orange" to the end of "mylist"
 ```
 
@@ -107,7 +107,7 @@ RPUSH mylist "apple" "banana" "orange"  ; Appends "apple", "banana", and "orange
 
 **Example:**
 
-```
+```bash
 LPUSH mylist "apple" "banana" "orange" "mango" "kiwi"
 LRANGE mylist 1 3  ; Returns ["banana", "orange"] (elements at index 1 and 2)
 LRANGE mylist -2 -1  ; Returns ["mango", "kiwi"] (last two elements)
@@ -137,7 +137,7 @@ LRANGE mylist -2 -1  ; Returns ["mango", "kiwi"] (last two elements)
 
 **Example:**
 
-```
+```bash
 LPUSH mylist "apple" "banana" "orange" "mango" "kiwi"
 LINDEX mylist 2  ; Returns "orange" (element at index 2)
 LINDEX mylist -1  ; Returns "kiwi" (last element)
@@ -150,3 +150,36 @@ LINDEX mylist 10  ; Returns nil (index out of range)
 - The index is zero-based, so the first element has an index of 0.
 - Negative indexes allow you to access elements from the end of the list, with `-1` referring to the last element.
 - If the index is out of range or the key doesn't exist, `LINDEX` returns `nil` to indicate an error.
+
+### `LINSERT` key where pivot value
+**Function:** Inserts an element (often a string) before or after a specified reference element within a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to insert an element into (string).
+- `where`: A string specifying the position for insertion:
+    - `"BEFORE"`: Inserts the new element before the reference element.
+    - `"AFTER"`: Inserts the new element after the reference element.
+- `pivot`: The string value of the existing element that will serve as the reference point for insertion (string).
+- `value`: The element (string or other data type depending on your Redis configuration) you want to insert (string).
+
+**Returns:**
+
+- An integer representing the new length of the list after the insertion:
+    - `1`: If the new element was inserted (pivot was found).
+    - `-1`: If the pivot element was not found in the list.
+
+**Example:**
+
+```bash
+LPUSH mylist "apple" "banana" "orange"
+LINSERT mylist BEFORE "banana" "kiwi" ; Inserts "kiwi" before "banana"
+LINSERT mylist AFTER "orange" "mango" ; Inserts "mango" after "orange"
+```
+
+**Important Notes:**
+
+- `LINSERT` provides a way to dynamically insert elements into a list at specific positions relative to existing elements.
+- The `pivot` element must exist in the list for the insertion to occur.
+- If the `pivot` element is not found, `LINSERT` returns `-1`, indicating an unsuccessful operation.
+- This command can be useful for maintaining order within a list based on specific reference points.
