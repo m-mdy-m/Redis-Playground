@@ -323,7 +323,7 @@ LSET mylist 2 "watermelon"  ; Changes the element at index 2 to "watermelon"
 
 **Example:**
 
-```
+```bash
 LPUSH mylist "apple" "banana" "orange"
 LLEN mylist  ; Returns 3 (the number of elements in the list)
 ```
@@ -337,3 +337,42 @@ LLEN mylist  ; Returns 3 (the number of elements in the list)
 **Key Point:**
 
 - `LLEN` provides a lightweight way to get the size of a list without retrieving all the elements.
+
+
+### `LREM` key count value
+**Function:** Removes a specified number of occurrences of a given element from a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to modify (string).
+- `count`: An integer indicating the number of occurrences of the element to remove.
+  - Positive `count`: Removes the specified number of elements **starting from the head (left)** of the list.
+  - Negative `count`: Removes the specified number of elements **starting from the tail (right)** of the list, with absolute value representing the number of occurrences to remove.
+  - `0`: Removes all occurrences of the element from the list.
+
+- `value`: The value (string or other data type depending on your configuration) you want to remove from the list.
+
+**Returns:**
+
+- An integer representing the number of elements that were actually removed from the list.
+
+**Example:**
+
+```bash
+LPUSH mylist "apple" "banana" "apple" "orange" "mango" "apple"
+LREM mylist 2 "apple" ; Removes 2 occurrences of "apple" from the head (left) - returns 2
+LREM mylist -2 "apple" ; Removes 2 occurrences of "apple" from the tail (right) - returns 2
+LREM mylist 0 "banana" ; Removes all occurrences of "banana" (if any) - returns 1 (or 0 if "banana" doesn't exist)
+```
+
+**Important Notes:**
+
+- `LREM` offers flexibility for removing specific numbers of elements based on their value and direction (head or tail).
+- A positive `count` removes elements from the left side of the list until the specified number is reached or the element is no longer found.
+- A negative `count` starts from the right side and removes elements until the absolute value of `count` is reached or the element is no longer found.
+- `LREM` is efficient for removing unwanted elements or keeping only a certain number of occurrences.
+
+**Key Points:**
+
+- `LREM` allows for targeted removal of elements based on both count and direction.
+- The return value indicates the actual number of elements removed, which might be less than the specified `count` if there are fewer occurrences in the list.
