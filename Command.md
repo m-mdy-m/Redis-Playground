@@ -183,6 +183,67 @@ redis-cli HELP <command_name>
 * **Non-existent Keys:** As demonstrated in the example, `MGET` gracefully handles non-existent keys by returning `nil` in their place within the response array. This allows your application logic to deal with missing data appropriately.
 * **Data Types:** While primarily used with strings, `MGET` can retrieve values of any data type supported by Redis (lists, sets, etc.). However, your code should be prepared to handle the specific data type returned for each key.
 * **Alternative:** For retrieving a single key's value, use the `GET` command. `MGET` shines when you need to fetch values for multiple keys in one go.
+---
+**`GETSET` key value**
+
+* **Function:** Sets the specified key to the given value and atomically returns the old value stored at the key.
+* **Arguments:**
+    * `key`: The key of the value to be set (string).
+    * `value`: The new value to be set for the key (string or any data type supported by Redis).
+* **Returns:**
+    * The old value stored at the key before the `GETSET` operation (string or the data type of the previous value). If the key doesn't exist, the special value `nil` is returned.
+    * Error message if there are any issues with the arguments or the key itself.
+* **Example:**
+  ```bash
+  SET name "Alice"
+
+  GETSET name "Bob"  ; Sets name to "Bob" and returns "Alice" (the old value)
+  ```
+
+**Important Notes:**
+
+* `GETSET` performs two operations in a single atomic action:
+    1. It retrieves the current value associated with the key.
+    2. It sets the key to the provided new value.
+* This atomicity ensures data consistency, even in high-concurrency scenarios. 
+* `GETSET` is useful in situations where you need to:
+    * Retrieve the existing value of a key.
+    * Conditionally update the key's value only if it hasn't been modified since you retrieved it (using the returned value).
+
+**Additional Considerations:**
+
+* **Understanding `nil`:** If the key doesn't exist before using `GETSET`, the command will set the key to the provided value and return `nil` as the old value.
+* **Data Types:** While the example shows strings, `GETSET` can work with any data type supported by Redis. The returned old value will match the data type previously stored at the key.
+* **Alternative Uses:** While `GETSET` is often used for conditional updates, it can also be a simpler way to retrieve a value and set a new value in one go compared to separate `GET` and `SET` commands.
+---
+**`GETRANGE` or `SUBSTR` key start end**
+
+* **Function:** Returns a substring of the string value stored at the specified key.
+* **Arguments:**
+    * `key`: The key of the string from which you want to extract a substring (string).
+    * `start`: The zero-based index of the starting byte within the string (integer).
+    * `end`: The zero-based index of the ending byte within the string (integer). Both `start` and `end` are inclusive. 
+* **Returns:**
+* A string reply containing the extracted substring.
+* If the key does not exist, the special value `nil` is returned.
+* An error message if there are any issues with the arguments or the key itself (e.g., invalid offsets, offsets exceeding string length).
+* **Example:**
+  ```bash
+  SET message "Hello, World!"
+  GETRANGE message 7 12        ; Extracts the substring "World" (starts at index 7, ends at 12)
+  ```
+
+**Important Notes:**
+
+* `GETRANGE` is specifically designed for extracting substrings from string values. Attempting to use it with other data types will result in an error.
+* It provides a way to retrieve a specific portion of a string without fetching the entire value.
+* Both `start` and `end` indices are inclusive, meaning the extracted substring includes the characters at the specified start and end positions.
+
+**Additional Considerations:**
+
+* **Negative Offsets:** You can use negative offsets to specify positions relative to the end of the string. For example, `-1` refers to the last character, `-2` to the second-last character, and so on.
+* **Out-of-Bounds Offsets:** If `start` is greater than `end`, an empty string is returned. If either `start` or `end` is out of the string's valid byte range (less than zero or greater than the string length minus one), the behavior depends on the Redis version. In some cases, an error might be thrown, while in others, a truncated substring might be returned. It's best to consult the Redis documentation for your specific version regarding edge cases.
+* **Alternative:** If you need to manipulate the entire string or don't know the string length beforehand, consider using other string manipulation techniques offered by Redis (e.g., using Lua scripting).
 
 ### Key Management:
 **`DEL` key**
