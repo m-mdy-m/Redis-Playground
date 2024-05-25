@@ -183,3 +183,94 @@ LINSERT mylist AFTER "orange" "mango" ; Inserts "mango" after "orange"
 - The `pivot` element must exist in the list for the insertion to occur.
 - If the `pivot` element is not found, `LINSERT` returns `-1`, indicating an unsuccessful operation.
 - This command can be useful for maintaining order within a list based on specific reference points.
+
+### `LPOP` (Left Pop) key 
+
+**Function:** Removes and returns the first element (head) from a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to remove an element from (string).
+
+**Returns:**
+
+- A string containing the value of the first element removed from the list.
+  - If the key doesn't exist or the list is empty, `nil` is returned.
+
+**Example:**
+
+```bash
+LPUSH mylist "apple" "banana" "orange"
+LPOP mylist  ; Returns "apple" and removes it from the head
+```
+
+**Important Notes:**
+
+- `LPOP` is a convenient way to retrieve and remove the first element from a list, effectively acting as a first-in-first-out (FIFO) queue.
+- It's often used in scenarios where you need to process items in the order they were added.
+- If the list is empty, `LPOP` returns `nil` to indicate there are no elements to remove.
+
+### `RPOP` (Right Pop) key
+
+**Function:** Removes and returns the last element (tail) from a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to remove an element from (string).
+
+**Returns:**
+
+- A string containing the value of the last element removed from the list.
+  - If the key doesn't exist or the list is empty, `nil` is returned.
+
+**Example:**
+
+```bash
+RPUSH mylist "apple" "banana" "orange"
+RPOP mylist  ; Returns "orange" and removes it from the tail
+```
+
+**Important Notes:**
+
+- `RPOP` behaves similarly to `LPOP`, but it removes and returns the element from the end (tail) of the list.
+- It's useful in scenarios where you need to process items in the order they were added from the back of the list.
+- If the list is empty, `RPOP` returns `nil` to indicate there are no elements to remove.
+
+**Key Difference:**
+
+The primary difference between `LPOP` and `RPOP` lies in the direction from which they operate on the list. `LPOP` works from the head (left) of the list, while `RPOP` works from the tail (right).  
+
+
+
+### `LTRIM` ky start stop
+**Function:** Retains a specified range of elements within a list stored in the Redis database, effectively trimming the list to that range.
+
+**Arguments:**
+
+- `key`: The name of the list you want to trim (string).
+- `start`: A zero-based index indicating the starting position of the range to keep (integer).
+  - `0`: Represents the first element in the list.
+  - Negative values can be used to count from the end of the list (e.g., `-1` for the last element).
+- `stop`: A zero-based index indicating the ending position of the range to keep (integer).
+  - `stop` should be equal to or greater than `start`.
+  - You can use `-1` to include the last element in the list.
+
+**Returns:**
+
+- A simple string response "OK" if the command was executed successfully.
+
+**Example:**
+
+```bash
+LPUSH mylist "apple" "banana" "orange" "mango" "kiwi"
+LTRIM mylist 1 3  ; Keeps elements at index 1, 2, and 3 (trims "apple" and "kiwi")
+```
+
+**Important Notes:**
+
+- `LTRIM` modifies the existing list by removing elements outside the specified range.
+- The `start` and `stop` indexes are inclusive, meaning the element at `start` is included, and the element at `stop` (if positive) is excluded.
+- When using negative indexes, `-1` refers to the last element, `-2` to the second-last element, and so on.
+- `LTRIM` is efficient for resizing lists and keeping only a desired portion of the data.
+
+### `` 
