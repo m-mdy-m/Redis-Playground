@@ -135,6 +135,35 @@ redis-cli HELP <command_name>
 * **Number of Arguments:** Remember that `MSETNX` requires an even number of arguments, with each key followed by its corresponding value. An odd number of arguments will result in an error.
 * **Data Types:** Similar to `MSET`, `MSETNX` can work with different data types for each key-value pair as long as they are supported by Redis. However, ensure your application handles the data types appropriately when retrieving the values later.
 * **Alternative:** Use `MSET` if you want to unconditionally set multiple key-value pairs, even if some keys already exist (existing keys will be overwritten). `MSETNX` provides a safer option for conditional setting.
+---
+**`SETRANGE` key index value**
+
+* **Function:** Replaces a portion of the existing string value stored at the specified key with a given value.
+* **Arguments:**
+    * `key`: The key of the string value to modify (string).
+    * `index`: The zero-based index at which to start replacing the characters within the string (integer).
+    * `value`: The string value to use for replacing the portion of the existing string (string).
+* **Returns:**
+    * The length of the updated string after the replacement operation (integer). If the key does not exist, a new key is created with the provided `value`.
+    * An error message if there are any issues with the arguments or the key itself (e.g., invalid index, index out of bounds).
+* **Example:**
+  ```bash
+  SET message "Hello, World!"
+  SETRANGE message 7 "Beautiful"   ; Replaces "World" with "Beautiful" (starting at index 7)
+  GET message                     ; Returns "Hello, Beautiful!"
+  ```
+
+**Important Notes:**
+
+* `SETRANGE` is designed for in-place modification of string values. It allows you to replace a specific part of the string with a new value.
+* The operation is atomic, ensuring the entire replacement happens as a single unit.
+* This command is useful for updating specific sections of a string without modifying the entire content.
+
+**Additional Considerations:**
+
+* **Index and Length:** The `index` specifies the starting point for the replacement. The length of the provided `value` determines how many characters are replaced. If the `value` is shorter than the existing content at the specified index, the remaining characters are left unchanged. Conversely, if the `value` is longer, it will overwrite subsequent characters in the original string.
+* **New Keys:** If the key doesn't exist before using `SETRANGE`, a new key is created with the provided `value`. The return value will be the string length of this newly created string (which is the length of the provided `value`).
+* **Out-of-Bounds Indices:** If the `index` is negative or greater than the length of the string, the behavior depends on the Redis version. In some cases, an error might be thrown, while in others, no replacement might occur. It's advisable to consult the Redis documentation for your specific version regarding edge cases.
 
 ---
 **`GET` key**
