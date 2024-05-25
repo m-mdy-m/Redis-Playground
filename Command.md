@@ -203,6 +203,39 @@ redis-cli HELP <command_name>
 * The `TYPE` command helps you understand the kind of data structure associated with a given key.
 * This is useful for debugging and when interacting with Redis keys in a dynamic application environment where the type of data stored under certain keys may vary.
 * Knowing the data type is crucial when performing operations that are specific to certain types, such as list operations on a key that stores a list or set operations on a key that stores a set.
+---
+**`STRLEN` key**
+
+* **Function:** Returns the length of the string value stored at the specified key.
+* **Arguments:**
+  * `key`: The key of the string for which you want to get the length (string).
+* **Returns:**
+  * The length of the string stored at the key (integer). If the key does not exist, it returns 0.
+* **Example:**
+  ```bash
+  SET name "Alice"
+  STRLEN name        ; Returns 5 (length of the string "Alice")
+
+  SET empty_string ""
+  STRLEN empty_string  ; Returns 0 (length of the empty string)
+
+  NONEXISTING_KEY    ; This key doesn't exist
+  STRLEN NONEXISTING_KEY  ; Returns 0 (length of the non-existent key)
+  ```
+
+**Important Notes:**
+
+* `STRLEN` only works with string values. Using it with other data types will result in an error.
+* It's a very lightweight and efficient operation, making it suitable for retrieving string lengths quickly.
+
+**Additional Considerations:**
+
+* **Understanding Length:** The returned length represents the number of bytes used to store the string value in Redis. This might differ from the perceived length if the string contains multi-byte characters depending on the character encoding used by Redis.
+* **Use Cases:** Knowing the string length is beneficial for various scenarios:
+    * Checking if a string is empty before performing operations on it.
+    * Implementing string manipulation functions that require knowledge of the string's size.
+    * Optimizing memory usage when dealing with large strings.
+
 ### Expiration Control:
 
 **`EXPIRE` key `seconds`**
