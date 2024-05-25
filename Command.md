@@ -226,6 +226,32 @@ redis-cli HELP <command_name>
     * **Key Creation:** If the key doesn't exist before using `INCR`, it will be automatically created with an initial value of 0 before being incremented.
     * **Overflow:** Since `INCR` operates on 64-bit signed integers, there's a maximum value it can reach. If the incremented value overflows this limit, an error will occur.
 ---
+**`DECR` key**
+
+* **Function:** Decrements the numeric value stored at the specified key by 1.
+* **Arguments:**
+    * `key`: The key of the value to decrement (string).
+* **Returns:**
+    * The new value of the key after the decrement (integer). If the key does not exist or contains a value of the wrong type (e.g., a string that cannot be parsed as a number), an error is returned.
+* **Example:**
+    ```bash
+    SET counter 5
+    DECR counter        ; Decrements the value of "counter" to 4
+    GET counter        ; Returns 4 (the new value)
+    ```
+
+**Important Notes:**
+
+* Like `INCR`, `DECR` is atomic, ensuring data consistency in high-traffic environments.
+* It only operates on numeric values. Attempting to decrement a non-numeric key will result in an error.
+* To decrement by a value other than 1, use the `DECRBY` command (explained later).
+
+
+**Additional Considerations:**
+
+* **Key Creation:** If the key doesn't exist before using `DECR`, it will be automatically created with an initial value of 0. This value will then be decremented by 1, resulting in a final value of -1.
+* **Underflow:** Since `DECR` works with 64-bit signed integers, there's a minimum value it can reach. Decrementing a value below this limit will lead to an underflow error.
+
 
 ### Expiration Control:
 
