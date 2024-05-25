@@ -273,4 +273,67 @@ LTRIM mylist 1 3  ; Keeps elements at index 1, 2, and 3 (trims "apple" and "kiwi
 - When using negative indexes, `-1` refers to the last element, `-2` to the second-last element, and so on.
 - `LTRIM` is efficient for resizing lists and keeping only a desired portion of the data.
 
-### `` 
+### `LSET` key index value
+**Function:** Modifies an element at a specific index within a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to modify (string).
+- `index`: A zero-based index indicating the position of the element you want to change (integer).
+  - `0`: Represents the first element in the list.
+  - Negative values can be used to count from the end of the list (e.g., `-1` for the last element).
+- `value`: The new value (string or other data type depending on your Redis configuration) you want to assign to the element (string).
+
+**Returns:**
+
+- A simple string response "OK" if the command was executed successfully.
+  - If the key doesn't exist or the index is out of range, an error is returned.
+
+**Example:**
+
+```bash
+LPUSH mylist "apple" "banana" "orange" "mango" "kiwi"
+LSET mylist 2 "watermelon"  ; Changes the element at index 2 to "watermelon"
+```
+
+**Important Notes:**
+
+- `LSET` allows you to update the content of existing elements within a list.
+- The index is zero-based, so the first element has an index of 0.
+- Negative indexes allow you to modify elements from the end of the list, with `-1` referring to the last element.
+- If the index is out of range or the key doesn't exist, `LSET` returns an error.
+
+**Key Points:**
+
+- `LSET` is useful for correcting or updating specific data within a list.
+- It modifies the list in-place, meaning the original elements are replaced at the specified positions.
+
+
+## `LLEN` key
+**Function:** Returns the length (number of elements) of a list stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the list you want to get the length of (string).
+
+**Returns:**
+
+- An integer representing the total number of elements currently in the list.
+  - If the key doesn't exist, the list is empty, or an error occurs, `0` is returned.
+
+**Example:**
+
+```
+LPUSH mylist "apple" "banana" "orange"
+LLEN mylist  ; Returns 3 (the number of elements in the list)
+```
+
+**Important Notes:**
+
+- `LLEN` is a quick way to determine the size of a list.
+- It's helpful for various purposes, such as iterating through a list or checking if it's empty before performing other operations.
+- If the key doesn't exist, `LLEN` returns `0` to indicate that the list is empty (not created yet).
+
+**Key Point:**
+
+- `LLEN` provides a lightweight way to get the size of a list without retrieving all the elements.
