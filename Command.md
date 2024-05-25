@@ -105,6 +105,36 @@ redis-cli HELP <command_name>
 * **Number of Arguments:** Remember that `MSET` requires an even number of arguments, with each key followed by its corresponding value. An odd number of arguments will result in an error.
 * **Data Types:** While `MSET` primarily works with strings, Redis allows setting different data types for each key-value pair as long as they are supported by Redis (strings, lists, sets, etc.). However, ensure your application logic handles the data types appropriately when retrieving the values later.
 * **Alternative:** For setting a single key-value pair, use the `SET` command. `MSET` is more efficient when dealing with multiple key-value pairs at once. 
+---
+**`MSETNX` key1 value1 [key2 value2 ...]**
+
+* **Function:** Sets multiple key-value pairs in a single atomic operation, but only if none of the specified keys already exist.
+* **Arguments:**
+  * `key1`, `value1`, `key2`, `value2`, ...: A series of key-value pairs (strings) to be set conditionally. The number of arguments must be even, with each key followed by its corresponding value.
+* **Returns:**
+  * Integer reply with the value 1 if all the key-value pairs were successfully set (because none of the keys existed before).
+  * Integer reply with the value 0 if at least one of the keys already existed, and no setting operation was performed (atomicity ensures all or none are set).
+  * Error message if there's a problem with the arguments (e.g., invalid arguments, wrong number of arguments).
+* **Example:**
+  ```bash
+  MSETNX name "Alice" age 30  ; Keys might not exist yet
+  MSETNX name "Bob" age 25  ; This will likely fail (assuming "name" was set previously)
+  ```
+
+  * The first `MSETNX` might set `name` to "Alice" and `age` to 30 if these keys didn't exist before.
+  * The second `MSETNX` is unlikely to succeed because `name` probably already has a value set from the first command.
+
+**Important Notes:**
+
+* `MSETNX` offers conditional setting, ensuring that none of the key-value pairs overwrite existing data.
+* It's atomic, meaning all key-value pairs are either set together or not set at all, maintaining data consistency.
+* This command is useful for scenarios where you want to create multiple key-value pairs only if they don't exist yet, preventing accidental overwrites.
+
+**Additional Considerations:**
+
+* **Number of Arguments:** Remember that `MSETNX` requires an even number of arguments, with each key followed by its corresponding value. An odd number of arguments will result in an error.
+* **Data Types:** Similar to `MSET`, `MSETNX` can work with different data types for each key-value pair as long as they are supported by Redis. However, ensure your application handles the data types appropriately when retrieving the values later.
+* **Alternative:** Use `MSET` if you want to unconditionally set multiple key-value pairs, even if some keys already exist (existing keys will be overwritten). `MSETNX` provides a safer option for conditional setting.
 
 ---
 **`GET` key**
