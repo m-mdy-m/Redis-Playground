@@ -203,6 +203,29 @@ redis-cli HELP <command_name>
 * The `TYPE` command helps you understand the kind of data structure associated with a given key.
 * This is useful for debugging and when interacting with Redis keys in a dynamic application environment where the type of data stored under certain keys may vary.
 * Knowing the data type is crucial when performing operations that are specific to certain types, such as list operations on a key that stores a list or set operations on a key that stores a set.
+---
+**`INCR` key**
+
+* **Function:** Increments the numeric value stored at the specified key by 1.
+* **Arguments:**
+    * `key`: The key of the value to increment (string).
+* **Returns:**
+    * The new value of the key after the increment (integer). If the key does not exist or contains a value of the wrong type (e.g., a string that cannot be parsed as a number), an error is returned.
+* **Example:**
+    ```bash
+    SET counter 0
+    INCR counter        ; Increments the value of "counter" to 1
+    GET counter        ; Returns 1 (the new value)
+    ```
+* **Important Notes:**
+    * `INCR` is atomic, meaning the entire operation (reading the current value, incrementing it, and writing the new value) happens as a single unit. This ensures data consistency even in high-concurrency scenarios.
+    * `INCR` only works with numeric values. If the key exists but holds a non-numeric value (e.g., a string), an error will occur.
+    * For incrementing by a value other than 1, use the `INCRBY` command (explained later).
+
+* **Additional Considerations:**
+    * **Key Creation:** If the key doesn't exist before using `INCR`, it will be automatically created with an initial value of 0 before being incremented.
+    * **Overflow:** Since `INCR` operates on 64-bit signed integers, there's a maximum value it can reach. If the incremented value overflows this limit, an error will occur.
+---
 
 ### Expiration Control:
 
