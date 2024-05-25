@@ -81,12 +81,6 @@ Here's a breakdown of the primary `DEBUG` subcommands and their functionalities:
   ```
 * **Impact:** High impact. Causes server crash and potential data loss. Use only for testing purposes in a controlled environment.
 
-**General Considerations:**
-
-* While `DEBUG` commands can be valuable tools, use them judiciously in production environments to avoid impacting server performance or stability.
-* Consider alternative profiling or monitoring tools for more in-depth performance analysis without directly interfering with server operations.
-* Regularly consult the official Redis documentation for the latest information on available `DEBUG` subcommands and their usage patterns.
-
 **6. `DEBUG RANDOMKEY`**
 
 * **Function:** Selects a random key from the Redis database.
@@ -155,6 +149,8 @@ Here's a breakdown of the primary `DEBUG` subcommands and their functionalities:
   ```
 * **Impact:** Low impact on server performance.
 
-**Important Note:**
+**General Considerations:**
 
-* **`DEBUG POPULATE`:** While you might encounter references to `DEBUG POPULATE` online, it's an undocumented command and not recommended for production use. It's designed for internal testing purposes and can potentially disrupt server operations by creating large numbers of keys without proper cleanup mechanisms.
+* While `DEBUG` commands can be valuable tools, use them judiciously in production environments to avoid impacting server performance or stability.
+* Consider alternative profiling or monitoring tools for more in-depth performance analysis without directly interfering with server operations.
+* Regularly consult the official Redis documentation for the latest information on available `DEBUG` subcommands and their usage patterns.
