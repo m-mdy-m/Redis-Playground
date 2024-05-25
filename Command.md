@@ -136,6 +136,37 @@ redis-cli HELP <command_name>
 * **Data Types:** Similar to `MSET`, `MSETNX` can work with different data types for each key-value pair as long as they are supported by Redis. However, ensure your application handles the data types appropriately when retrieving the values later.
 * **Alternative:** Use `MSET` if you want to unconditionally set multiple key-value pairs, even if some keys already exist (existing keys will be overwritten). `MSETNX` provides a safer option for conditional setting.
 ---
+**`SETNX` key value**
+
+* **Function:** Sets the specified key to the given value only if the key does not already exist.
+* **Arguments:**
+    * `key`: The key of the value to be set (string).
+    * `value`: The value to be associated with the key (string or any data type supported by Redis).
+* **Returns:**
+    * Integer reply with the value 1 if the key was successfully set because it didn't exist before.
+    * Integer reply with the value 0 if the key already existed, and no setting operation was performed.
+    * Error message if there are any issues with the arguments or the key itself (e.g., invalid arguments).
+* **Example:**
+  ```bash
+  SETNX key1 "value1"        ; Sets key1 if it doesn't exist (returns 1)
+  SETNX key1 "value2"        ; Tries to set key1 again (returns 0, key already exists)
+  ```
+
+**Important Notes:**
+
+* `SETNX` provides a conditional setting mechanism. It ensures that the key-value pair is only set if the key doesn't exist beforehand.
+* This is useful for scenarios where you want to:
+    * Create a new key with a specific value only if it doesn't exist yet.
+    * Prevent accidental overwrites of existing data.
+* `SETNX` is atomic, meaning the entire operation of checking for existence and setting the value (if allowed) happens as a single unit.
+
+**Additional Considerations:**
+
+* **Data Types:** While the example shows strings, `SETNX` can work with any data type supported by Redis. The data type of the `value` will determine how it's stored and interpreted.
+* **Alternatives:**
+    * Use `SET` for unconditional setting of a key-value pair, even if the key already exists (existing keys will be overwritten).
+    * Use `MSETNX` for setting multiple key-value pairs conditionally (all or none are set based on existence).
+---
 **`SETRANGE` key index value**
 
 * **Function:** Replaces a portion of the existing string value stored at the specified key with a given value.
@@ -195,6 +226,41 @@ redis-cli HELP <command_name>
 * **Alternatives:**
     * Use `SET` for setting a key-value pair without expiration.
     * Use `EXPIRE` to set an expiration time for an existing key.
+---
+**`PSETEX` key milliseconds value**
+
+* **Function:** Sets the specified key to the given value and sets a timeout in milliseconds after which the key will be automatically deleted.
+* **Arguments:**
+    * `key`: The key of the value to be set (string).
+    * `milliseconds`: The duration in milliseconds for which the key will exist (positive integer).
+    * `value`: The value to be associated with the key (string or any data type supported by Redis).
+* **Returns:**
+    * Simple string reply stating "OK" if the key was successfully set with the timeout.
+    * Error message if there are any issues with the arguments or the key itself (e.g., invalid arguments, negative timeout value).
+* **Example:**
+  ```bash
+  PSETEX temporary_data 10000 "This is temporary data"  ; Timeout of 10 seconds (10000 milliseconds)
+  ```
+
+**Important Notes:**
+
+* `PSETEX` is specifically designed for setting key-value pairs with expiration times in milliseconds. It offers finer control over expiration compared to `SETEX` which uses seconds.
+* It combines setting a key-value pair with automatic expiration. This is useful for storing data that only needs to persist for a brief period.
+* Similar to `SETEX`, `PSETEX` is atomic, ensuring the key setting and expiration timer creation happen as a single unit.
+
+**Additional Considerations:**
+
+* **Key Overwrites:** If a key with the same name already exists, `PSETEX` will overwrite the existing key's value and expiration time with the new values provided.
+* **Data Types:** While the example shows strings, `PSETEX` can work with any data type supported by Redis. The data type of the `value` will determine how it's stored and interpreted.
+* **Alternatives:**
+    * Use `SET` for setting a key-value pair without expiration.
+    * Use `EXPIRE` to set an expiration time for an existing key.
+    * Consider `SETEX` if millisecond precision isn't crucial and second-level granularity is sufficient.
+
+**Choosing Between `SETEX` and `PSETEX`:**
+
+The choice between `SETEX` and `PSETEX` depends on the level of precision required for your expiration timeouts. If you need control down to the millisecond, `PSETEX` is the way to go. However, if seconds are sufficient for your use case, `SETEX` offers a simpler syntax.
+
 ---
 **`GET` key**
 
