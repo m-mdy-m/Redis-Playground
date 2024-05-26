@@ -423,6 +423,46 @@ SINTER set1 set2 set3  ; Returns ["apple", "grapefruit"] (members present in all
 
 - Redis also offers the `SINTERSTORE` command, which calculates the intersection and stores the resulting members in a new set at the specified destination key.
 
+### `SINTERSTORE` destintaion key [key ...]
+**Function:** Calculates the intersection of all the given sets and stores the resulting members in a new set at the specified destination key.
+
+**Arguments:**
+
+- `destination`: The name of the set where you want to store the members resulting from the intersection operation (string).
+- `key(s)`: One or more strings representing the names of the sets whose members you want to compare for intersection.
+
+**Returns:**
+
+- An integer representing the number of members that were added to the destination set as a result of the intersection operation.
+
+**Example:**
+
+```bash
+SADD set1 "apple" "banana" "grapefruit"
+SADD set2 "orange" "mango" "apple"
+SADD set3 "grapefruit" "kiwi" "apple"
+
+SINTERSTORE intersection set1 set2 set3  ; Returns 2 (number of unique members added to "intersection")
+SISMEMBERS intersection ; Returns ["apple", "grapefruit"] (members present in all three sets stored in "intersection")
+```
+
+**Important Notes:**
+
+- `SINTERSTORE` combines the functionalities of `SINTER` (calculating the intersection) and `SADD` (adding members to a set) into a single command.
+- It performs the intersection operation on the specified sets and stores the resulting unique members in a new set identified by the `destination` key.
+- The return value indicates how many new members were added to the destination set, reflecting the outcome of the intersection operation.
+  - If the destination set already exists, its contents are overwritten with the intersection result.
+
+**Key Points:**
+
+- `SINTERSTORE` is an efficient way to create a new set containing the common elements (intersection) present in all the specified sets.
+- It simplifies the process by avoiding the need for separate `SINTER` and `SADD` commands.
+- The return value helps you understand the effectiveness of the operation, indicating how many new members were added to the destination set.
+
+**Additional Notes:**
+
+- Redis also offers the `SINTER` command, which calculates the intersection but doesn't store the result in a new set. It simply returns the members as an array.
+
 ### `SDIFF` key [key ...]
 **Function:** Returns the members of the set resulting from the difference between the first set and all the successive sets.
 
@@ -438,7 +478,7 @@ SINTER set1 set2 set3  ; Returns ["apple", "grapefruit"] (members present in all
 
 **Example:**
 
-```
+```bash
 SADD set1 "apple" "banana" "grapefruit"
 SADD set2 "orange" "mango" "apple"
 SADD set3 "grapefruit" "kiwi"
@@ -463,3 +503,43 @@ SDIFF set1 set2 set3 ; Returns ["banana"] (members in set1 but not in set2 or se
 **Additional Notes:**
 
 - Redis also offers the `SDIFFSTORE` command, which calculates the set difference and stores the resulting members in a new set at the specified destination key.
+
+### `SDIFFSTORE` destintaion key [key ...]
+**Function:** Calculates the difference between the first set and all the successive sets and stores the resulting members in a new set at the specified destination key.
+
+**Arguments:**
+
+- `destination`: The name of the set where you want to store the members resulting from the difference operation (string).
+- `key`: The name of the set you want to consider as the base for the difference operation (string).
+- `key(s)` (optional): One or more strings representing the names of the sets whose members you want to subtract from the base set.
+
+**Returns:**
+
+- An integer representing the number of members that were added to the destination set as a result of the difference operation.
+
+**Example:**
+
+```bash
+SADD set1 "apple" "banana" "grapefruit"
+SADD set2 "orange" "mango" "apple"
+SADD set3 "grapefruit" "kiwi"
+
+SDIFFSTORE result set1 set2  ; Returns 2 (number of unique members added to "result")
+SISMEMBERS result ; Returns ["banana", "grapefruit"] (members in set1 but not in set2 stored in "result")
+
+SDIFFSTORE unique_products store1 store2 store3 ; Returns 1 (unique member added to "unique_products")
+SISMEMBERS unique_products ; Returns ["banana"] (member in store1 but not in store2 or store3)
+```
+
+**Important Notes:**
+
+- `SDIFFSTORE` combines the functionalities of `SDIFF` (calculating the difference) and `SADD` (adding members to a set) into a single command.
+- It performs the difference operation between the specified sets and stores the resulting unique members in a new set identified by the `destination` key.
+- The return value indicates how many new members were added to the destination set, reflecting the outcome of the difference operation.
+  - If the destination set already exists, its contents are overwritten with the difference result.
+
+**Key Points:**
+
+- `SDIFFSTORE` is an efficient way to create a new set containing the unique elements present in a base set but absent in any of the other specified sets.
+- It simplifies the process by avoiding the need for separate `SDIFF` and `SADD` commands.
+- The return value helps you understand the effectiveness of the operation, indicating how many new members were added to the destination set.
