@@ -146,7 +146,7 @@ SCARD myset  ; Returns 3 (the number of unique members in the set)
 
 **Example:**
 
-```
+```bash
 SADD myset "apple" "banana" "orange" "apple"  ; "apple" is added twice
 SREM myset "apple" "grapefruit"  ; Removes "apple" (once) - returns 1 (even though "grapefruit" wasn't present)
 SCARD myset ; Returns 2 (the number of remaining unique elements in the set)
@@ -178,7 +178,7 @@ SCARD myset ; Returns 2 (the number of remaining unique elements in the set)
 
 **Example:**
 
-```
+```bash
 SADD myset "apple" "banana" "orange"
 SPOP myset  ; Returns a random member from the set (e.g., "apple", "banana", or "orange")
 SCARD myset ; Returns 2 (one member less after SPOP)
@@ -195,3 +195,37 @@ SCARD myset ; Returns 2 (one member less after SPOP)
 - `SPOP` is useful for selecting a random element from a set for various purposes, such as random sampling or implementing game mechanics.
 - The return value ensures you get a random member and reflects whether the set was empty or not.
 - Be mindful of potential duplicate selections, especially for small sets, if uniqueness is crucial for your use case.
+
+
+### `SISMEMBER` key member
+**Function:** Checks if a specific member (element) exists within a set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to check for a member (string).
+- `member`: The value (string or other data type depending on your configuration) whose presence you want to verify in the set.
+
+**Returns:**
+
+- An integer representing the existence of the member:
+    - `1`: If the member exists in the set.
+    - `0`: If the member does not exist in the set.
+
+**Example:**
+
+```bash
+SADD myset "apple" "banana" "orange"
+SISMEMBER myset "apple"  ; Returns 1 (member "apple" exists)
+SISMEMBER myset "grapefruit"  ; Returns 0 (member "grapefruit" doesn't exist)
+```
+
+**Important Notes:**
+
+- `SISMEMBER` is a convenient way to verify the presence of a specific element before performing operations that rely on it existing in the set.
+- It's efficient for checking member existence without retrieving the entire set.
+- The return value provides a clear indication of whether the member is present in the set or not.
+
+**Key Points:**
+
+- `SISMEMBER` helps you write conditional logic in your code based on the existence of specific elements within a set.
+- It's a lightweight command compared to retrieving all members with `SMEMBERS` when you only need to know if a specific element exists.
