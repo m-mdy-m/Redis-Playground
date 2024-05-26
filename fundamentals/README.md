@@ -399,3 +399,46 @@ UNSUBSCRIBE                             ; Unsubscribe from all remaining channel
 
 - Clients can check their current subscriptions using the `PUBSUB channels` command.
 - Use `subscribe` again to re-subscribe to channels if needed.
+
+### `PSUBSCRIBE` pattern [pattern ...]
+**Function:** Establishes a subscription for a client to receive messages published to channels matching a specified pattern in the Redis Pub/Sub messaging system.
+
+**Arguments:**
+
+- `pattern(s)`: One or more strings representing patterns (using wildcards) to match channel names. You can specify multiple patterns in a single command.
+
+**Returns:**
+
+- Nothing is explicitly returned by the command itself. However, upon successful subscription, Redis sends a message to the client for each pattern in the format: "psubscribe <pattern> <number of patterns currently subscribed to>".
+- Subsequently, whenever a message is published to a channel matching a subscribed pattern, the client receives another message in the format: "pmessage <pattern> <channel> <message payload>".
+
+**Example:**
+
+```bash
+PSUBSCRIBE news.* sports*  ; Subscribe to patterns "news.*" and "sports*"
+
+# After successful subscription (messages sent by Redis server):
+psubscribe news.* 2 (indicates subscribed to 2 patterns)
+psubscribe sports* 2
+
+# Example message received upon publishing to a matching channel:
+pmessage news.* news_channel Breaking news: Stock prices are soaring!
+```
+
+**Important Notes:**
+
+- `PSUBSCRIBE` enables clients to subscribe to channels based on patterns using wildcards (`*` matches any character sequence and `?` matches a single character).
+- This allows you to receive messages published to a group of channels that share a common naming convention.
+- Clients can subscribe to multiple patterns in a single command.
+- The message format includes the pattern, the specific channel that matched the pattern, and the actual message payload.
+
+**Key Points:**
+
+- `PSUBSCRIBE` is valuable for scenarios where you want to listen for messages across a category of channels identified by a pattern.
+- It promotes efficient subscription management by reducing the need to subscribe to individual channels with similar names.
+- Understanding the message format helps you identify the matching pattern, the specific channel that triggered the message, and the actual content. 
+
+**Additional Notes:**
+
+- The `PUNSUBSCRIBE` command allows clients to unsubscribe from specific patterns or all patterns.
+- `PSUBSCRIBE` offers a more flexible approach to subscribing compared to `SUBSCRIBE` for channel-specific subscriptions. 
