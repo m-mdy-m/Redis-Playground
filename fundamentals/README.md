@@ -67,3 +67,122 @@ Imagine you're tracking website visitors. You want to know roughly how many uniq
 
 
 
+## Command HyperLogLog
+### `PFADD` key element [element ...]
+**Function:** Adds one or more elements (distinct values) to a HyperLogLog (HLL) data structure used to estimate the cardinality (approximate number of unique elements) of a set in Redis.
+
+**Arguments:**
+
+- `key`: The name of the HyperLogLog you want to add elements to (string).
+- `element(s)`: One or more strings representing the distinct values you want to add to the HLL. You can specify multiple elements in a single command.
+
+**Returns:**
+
+- An integer representing the outcome:
+    - `1`: If the approximated cardinality estimated by the HyperLogLog changed after executing the command (at least one new element was added).
+    - `0`: If the approximated cardinality remained unchanged (no new elements were added or the elements already existed).
+
+**Example:**
+
+```bash
+PFADD myhll "user1" "user2" "user3"  ; Adds three elements (approximate cardinality might change)
+PFADD myhll "user2" "user4"         ; Adds "user4" (approximate cardinality might change)
+PFCOUNT myhll                        ; Returns an integer representing the estimated number of unique elements
+```
+
+**Important Notes:**
+
+- `PFADD` is a space-efficient way to keep track of the approximate number of unique elements in a set. 
+- The HLL data structure offers a probabilistic approach, providing an estimate with a standard error of 0.81%.
+- The return value indicates whether the addition of elements potentially affected the cardinality estimation.
+  - A return of `0` doesn't necessarily mean no elements were added, but rather that they might have been duplicates or already existed.
+
+**Key Points:**
+
+- `PFADD` is valuable for scenarios where exact counts aren't crucial, but you need a lightweight and scalable solution to estimate the number of unique elements in a large dataset.
+- The probabilistic nature of HLLs ensures efficient memory usage compared to storing all elements explicitly.
+- Understanding the return value helps you interpret whether new elements were added or if duplicates were encountered.
+
+**Additional Notes:**
+
+- Redis also offers the `PFCOUNT` command to retrieve the estimated cardinality of the HyperLogLog.
+- You can use multiple `PFADD` commands on the same key to continuously add elements and update the cardinality estimation over time.
+
+### `PFCOUNT` key [key ...]
+**Function:** Returns the approximated cardinality (estimated number of unique elements) of a HyperLogLog (HLL) data structure used to track distinct values in Redis.
+
+**Arguments:**
+
+- `key(s)` (optional): One or more strings representing the names of the HyperLogLogs whose cardinality you want to estimate. You can specify multiple keys to estimate the cardinality of the union of those HLLs.
+
+**Returns:**
+
+- An integer representing the approximated number of unique elements in the specified HyperLogLog(s).
+- If no key is specified and the key doesn't exist, the return value is `0`.
+
+**Example:**
+
+```bash
+PFADD myhll "user1" "user2" "user3"  ; Adds elements (approximate cardinality is estimated)
+PFCOUNT myhll                        ; Returns an integer representing the estimated number of unique elements in "myhll"
+
+PFADD anotherhll "user4" "user5"      ; Adds elements to another HLL
+PFCOUNT myhll anotherhll             ; Estimates cardinality of the union (considering elements from both HLLs)
+```
+
+**Important Notes:**
+
+- `PFCOUNT` retrieves the estimated cardinality (number of unique elements) from a HyperLogLog data structure.
+- The HLL offers a space-efficient and probabilistic approach, providing an estimate with a standard error of 0.81%.
+- You can optionally specify multiple keys to estimate the cardinality of the union of those HLLs.
+- If no key is provided, the command behaves like `PFCOUNT` with a non-existent key, returning `0`.
+
+**Key Points:**
+
+- `PFCOUNT` is essential for understanding the approximate size and distinct elements present within a HyperLogLog.
+- The estimated cardinality helps you analyze the data stored in the HLL without requiring exact counts for every element.
+- The ability to handle multiple keys allows for efficient estimation of the union of cardinalities from various HLLs.
+
+**Additional Notes:**
+
+- `PFADD` is the companion command for adding elements to the HyperLogLog. Use `PFADD` to populate the HLL with distinct values, and then use `PFCOUNT` to retrieve the estimated cardinality.
+- Remember that the estimation has an inherent error rate, but it's a valuable trade-off for memory efficiency when dealing with large datasets.
+
+### `PFMERGE` destkey sourcekey [sourcekey ...]
+**Function:** Merges multiple HyperLogLog (HLL) data structures into a single, new HLL, providing an approximation of the cardinality (number of unique elements) of the union of the source HLLs.
+
+**Arguments:**
+
+- `destination`: The name of the new HLL where the merged cardinality estimate will be stored (string).
+- `key(s)`: One or more strings representing the names of the existing HLLs whose data you want to combine.
+
+**Returns:**
+
+- A simple string reply of "OK" indicating successful merging of the HLLs.
+
+**Example:**
+
+```bash
+PFADD hll1 "user1" "user2" "user3"
+PFADD hll2 "user4" "user1" "user5"
+
+PFMERGE merged_hll hll1 hll2 ; Merges hll1 and hll2 into merged_hll (estimates cardinality of the union)
+PFCOUNT merged_hll           ; Returns an integer representing the estimated number of unique elements in all three user sets
+```
+
+**Important Notes:**
+
+- `PFMERGE` is a powerful tool for combining the cardinality estimations from multiple HLLs.
+- The resulting HLL in the `destination` key provides an approximation of the total number of unique elements across all the merged source HLLs.
+- It leverages the space-efficient properties of HLLs to create a compact representation of the combined cardinality estimate.
+
+**Key Points:**
+
+- `PFMERGE` is crucial for analyzing the overall size and distinct elements when dealing with data distributed across multiple HLLs.
+- The merged HLL offers a single point of reference for understanding the approximate cardinality of the combined set.
+- The efficiency of HLLs ensures scalability when working with large datasets spread across various HLL structures.
+
+**Additional Notes:**
+
+- Consider using `PFCOUNT` on the destination HLL after the merge to retrieve the estimated cardinality of the combined set.
+- `PFMERGE` is particularly useful for scenarios where you want to analyze data from different sources or shard sets represented by individual HLLs.
