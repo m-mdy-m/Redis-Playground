@@ -331,3 +331,172 @@ HVALS myhash  ; Returns ["Alice", "30", "New York"] (all field values in the has
 
 - `HVALS` offers an alternative to `HGETALL` when you only need the data values within the hash.
 - Consider using more targeted commands like `HGET` for specific fields if performance is a concern for large hashes.
+
+
+### `HINCRBY` key field increment
+**Function:** Increments (or decrements) the numerical value associated with a specific field within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to modify (string).
+- `field`: The name of the specific field whose numerical value you want to increment/decrement (string).
+- `increment`: An integer representing the amount by which you want to increment (positive value) or decrement (negative value) the field's value.
+
+**Returns:**
+
+- An integer representing the new value of the field after the increment/decrement operation:
+    - If the field doesn't exist and `increment` is positive, a new field is created with the specified `increment` value as its initial value.
+    - If the field doesn't exist and `increment` is negative, an error is returned (cannot decrement a non-existent value).
+
+**Example:**
+
+```
+HSET myhash counter 10  ; Assuming the initial value is 10
+HINCRBY myhash counter 5   ; Increments "counter" by 5, resulting in 15
+HINCRBY myhash non-existent-field 3  ; Creates a new field "non-existent-field" with value 3 (positive increment)
+HINCRBY myhash counter -2  ; Decrements "counter" by 2, resulting in 13
+```
+
+**Important Notes:**
+
+- `HINCRBY` is a versatile command for managing counters and other numerical data stored within Redis hashes.
+- It allows for both incrementing and decrementing values based on the provided `increment` argument.
+- If the field doesn't exist and the `increment` is positive, a new field is created with the initial value set to the specified `increment`. 
+- However, attempting to decrement a non-existent field results in an error.
+- The return value provides the new value of the field after the operation, ensuring you have the updated data.
+
+**Key Points:**
+
+- `HINCRBY` simplifies managing numerical data within hashes, offering atomic increment/decrement operations.
+- It's efficient for keeping track of counts, scores, or other numerical values associated with specific fields.
+- Understanding the behavior for non-existent fields is crucial to avoid potential errors.
+
+### `HINCRBYFLOAT` key field increment
+**Function:** Increments (or decrements) the floating-point value associated with a specific field within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to modify (string).
+- `field`: The name of the specific field whose floating-point value you want to increment/decrement (string).
+- `increment`: A floating-point number representing the amount by which you want to increment (positive value) or decrement (negative value) the field's value.
+
+**Returns:**
+
+- A string representing the new floating-point value of the field after the increment/decrement operation:
+    - If the field doesn't exist and `increment` is positive, a new field is created with the specified `increment` value as its initial value.
+    - If the field doesn't exist and `increment` is negative, an error is returned (cannot decrement a non-existent value).
+
+**Example:**
+
+```
+HSET myhash value 3.14  ; Assuming the initial value is 3.14
+HINCRBYFLOAT myhash value 1.5   ; Increments "value" by 1.5, resulting in 4.64 (approximately)
+HINCRBYFLOAT myhash non-existent-field 2.7  ; Creates a new field "non-existent-field" with value 2.7 (positive increment)
+HINCRBYFLOAT myhash value -0.8  ; Decrements "value" by 0.8, resulting in 3.84 (approximately)
+```
+
+**Important Notes:**
+
+- `HINCRBYFLOAT` is specifically designed for managing floating-point numbers (numbers with decimals) stored within Redis hashes.
+- It allows for both increasing and decreasing floating-point values using the provided `increment` argument.
+- If the field doesn't exist and the `increment` is positive, a new field is created with the initial value set to the specified `increment`. 
+- However, attempting to decrement a non-existent field results in an error.
+- The return value is a string representation of the new floating-point value after the operation.
+
+**Key Points:**
+
+- `HINCRBYFLOAT` is essential for handling numerical data with decimals within Redis hashes.
+- It offers atomic increment/decrement operations for floating-point values, ensuring data consistency.
+- Similar to `HINCRBY`, understanding the behavior for non-existent fields is crucial to avoid potential errors.
+
+**Additional Notes:**
+
+- Keep in mind that due to the inherent limitations of floating-point representation in computers, calculations might not always produce perfectly accurate results. It's recommended to consider the precision requirements for your specific use case.
+
+### `HSETNX` key field value
+**Function:** Sets the field to a new value within a hash stored in the Redis database, but only if the field does not already exist.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to modify (string).
+- `field`: The name of the specific field you want to set (string).
+- `value`: The new value (string or other data type depending on your configuration) to assign to the field (string).
+
+**Returns:**
+
+- An integer representing the outcome:
+    - `1`: If the field is a new field and the value was set successfully.
+    - `0`: If the field already existed and no value was set (operation has no effect).
+
+**Example:**
+
+```
+HSET myhash name "Alice"  ; Assuming "name" doesn't exist yet
+
+HSETNX myhash name "Bob"  ; Sets "name" to "Bob" (new field) - returns 1
+
+HSETNX myhash name "Charlie" ; Doesn't modify "name" (already exists) - returns 0
+```
+
+**Important Notes:**
+
+- `HSETNX` provides a conditional way to set a value in a hash field, ensuring the field is created only if it's absent.
+- It's useful for scenarios where you want to avoid overwriting existing data or for creating unique identifiers within a hash.
+- The return value clearly indicates whether the field was newly created or already existed, helping you understand the outcome of the operation.
+
+**Key Points:**
+
+- `HSETNX` offers atomic (indivisible) behavior, meaning either the entire field is created with the value or no change occurs if the field already exists.
+- It's a valuable tool for controlled data creation within Redis hashes.
+- The return value helps you determine the next steps in your code based on whether the field was created or not.
+
+### `HRANDFIELD` key [count [WITHVALUES]]
+**Function:** Returns one or more random fields from a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve random fields from (string).
+- `count` (integer): An integer specifying the number of random fields to return:
+    - Positive `count`: Returns the specified number of unique fields without repetition. 
+    - Negative `count`: Returns the specified number of fields, allowing duplicates (treated as absolute value).
+- `WITHVALUES` (optional argument): An optional flag indicating whether to include the corresponding values along with the field names.
+
+**Returns:**
+
+- When `WITHVALUES` is not specified:
+    - An array containing the names of `count` random fields (strings) chosen from the hash. 
+    - If `count` is greater than the number of fields in the hash, all fields will be returned.
+    - If the key doesn't exist or the hash is empty, an empty list is returned.
+- When `WITHVALUES` is specified:
+    - An array containing `count` pairs of field-value combinations (arrays of strings).
+    - The behavior regarding `count` and empty results remains the same as without `WITHVALUES`.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+
+# Get 2 random fields (without values)
+HRANDFIELD myhash 2  ; Possible outputs: ["name", "city"] or ["age", "New York"] etc. (random selection)
+
+# Get 1 random field with its value
+HRANDFIELD myhash 1 WITHVALUES  ; Possible outputs: ["name", "Alice"] or ["age", "30"] etc. (random selection with value)
+
+# Get 3 random fields allowing duplicates (without values)
+HRANDFIELD myhash -3  ; Possible outputs: ["name", "name", "city"] or any combination including duplicates based on random selection
+```
+
+**Important Notes:**
+
+- `HRANDFIELD` is a convenient way to retrieve a random sample of fields from a hash.
+- The `count` argument allows you to control the number of fields and whether duplicates are allowed (with negative `count`).
+- The `WITHVALUES` option provides both field names and their corresponding values for the chosen fields.
+- The return value ensures you get a random selection of fields or field-value pairs depending on the arguments used.
+
+**Key Points:**
+
+- `HRANDFIELD` injects randomness into your application logic by providing a way to select random data points from a hash.
+- It's useful for various scenarios, such as random user profile selection, recommendation engines, or implementing games with random elements.
+- Understanding the behavior with negative `count` and the `WITHVALUES` option allows you to tailor the random selection to your specific needs.
