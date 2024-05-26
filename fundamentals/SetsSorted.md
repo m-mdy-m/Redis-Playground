@@ -90,7 +90,7 @@ ZRANGE myzset 0 -1 WITHSCORES ; Returns ["banana", "5.0"] ... ["orange", "20.0"]
 
 **Example:**
 
-```
+```bash
 ZADD myzset 10 "apple" 5 "banana" 20 "orange"
 ZRANGE myzset 0 1  ; Returns ["banana", "apple"] (elements from index 0 to 1, sorted by score)
 ZRANGE myzset 0 1 WITHSCORES ; Returns [["banana", "5.0"], ["apple", "10.0"]] (elements with scores)
@@ -134,7 +134,7 @@ ZRANGE myzset 0 -1 REV ; Returns ["orange", "banana", "apple"] (elements reverse
 
 **Example:**
 
-```
+```bash
 ZADD myzset 10 "apple" 5 "banana" 20 "orange"
 ZREVRANGE myzset 1 0  ; Returns ["orange", "apple"] (elements from index 1 to 0 in reverse order, highest to lowest score)
 ZREVRANGE myzset 2 -1 WITHSCORES ; Returns [["orange", "20.0"], ["banana", "5.0"]] (elements with scores, starting from the highest)
@@ -154,3 +154,43 @@ ZREVRANGE myzset 0 -1 ; Returns ["orange", "banana", "apple"] (full range in rev
 - `ZREVRANGE` is valuable when you need to access the elements of a sorted set starting from the highest score and working your way down.
 - Understanding the reversed indexing is crucial for specifying the desired range within the sorted set.
 - The `WITHSCORES` option provides additional context by including the scores along with the members.
+
+
+### `ZINCRBY` key increment member
+**Function:** Increments the score of a member (element) in a sorted set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the sorted set you want to modify (string).
+- `increment`: A floating-point number representing the value by which you want to increase the score of the member.
+- `member`: The value (string or other data type depending on your configuration) whose score you want to increment.
+
+**Returns:**
+
+- A string representing the new score of the member after the increment operation.
+
+**Example:**
+
+```bash
+ZADD myzset 10 "apple"
+
+ZINCRBY myzset 5 "apple" ; New score for "apple" becomes 15 (10 + 5)
+ZRANGE myzset 0 -1 ; Returns ["apple"] (member with updated score)
+```
+
+**Important Notes:**
+
+- `ZINCRBY` provides a way to dynamically adjust the scores of members within a sorted set.
+- The `increment` value can be positive (increase score) or negative (decrease score). 
+- If the member doesn't exist in the sorted set, it's added as a new member with the specified `increment` as its initial score (treated as if the previous score was 0.0).
+- If the key doesn't exist, a new sorted set is created with the specified member and score.
+
+**Key Points:**
+
+- `ZINCRBY` is crucial for maintaining and updating the ranking of elements within a sorted set based on their scores.
+- The ability to handle non-existent members and keys ensures flexibility in managing the sorted set.
+- The return value provides confirmation of the updated score, reflecting the outcome of the increment operation.
+
+**Additional Notes:**
+
+- Unlike regular SET commands that operate on string values, `ZINCRBY` specifically works with sorted sets, modifying scores of members within the set.
