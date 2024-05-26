@@ -328,7 +328,7 @@ message channel1 Hello from the publisher!
 
 **Example:**
 
-```
+```bash
 PUBLISH news_channel "Breaking news: Stock prices are soaring!"
 
 # Message received by subscribed clients (format):
@@ -352,3 +352,50 @@ message news_channel "Breaking news: Stock prices are soaring!"
 
 - The `subscribe` command allows clients to subscribe to channels and receive messages published to those channels.
 - Consider using persistent messaging systems if reliable message delivery and storage are crucial for your application.
+
+
+### `UNSUBSCRIBE` [channel [channel ...]]
+**Function:** Unsubscribes a client from one or more channels in the Redis Pub/Sub messaging system.
+
+**Arguments:**
+
+- `channel(s)` (optional): One or more strings representing the names of the channels you want to unsubscribe from. You can specify multiple channels or leave it empty to unsubscribe from all channels.
+
+**Returns:**
+
+- When unsubscribing from specific channels:
+    - An integer representing the number of channels the client is no longer subscribed to.
+- When unsubscribing from all channels (no arguments):
+    - An integer representing the total number of channels the client was unsubscribed from (previously subscribed channels).
+
+**Example:**
+
+```bash
+SUBSCRIBE channel1 channel2 channel3  ; Subscribe to three channels
+
+UNSUBSCRIBE channel2 channel3          ; Unsubscribe from two channels
+
+# Return value: 2 (number of channels unsubscribed from)
+
+UNSUBSCRIBE                             ; Unsubscribe from all remaining channels
+
+# Return value: 1 (number of channels unsubscribed from, which was channel1)
+```
+
+**Important Notes:**
+
+- `UNSUBSCRIBE` allows clients to stop receiving messages published to specific channels.
+- You can unsubscribe from individual channels or all channels at once (no arguments).
+- The return value indicates the number of channels the client successfully unsubscribed from.
+- A client that wasn't subscribed to any channels in the first place will receive a return value of `0`.
+
+**Key Points:**
+
+- `UNSUBSCRIBE` is essential for managing client subscriptions and controlling which messages they receive in the Pub/Sub model.
+- The ability to unsubscribe from individual channels or all channels provides flexibility for clients.
+- Understanding the return value helps you confirm the effectiveness of the unsubscribe operation.
+
+**Additional Notes:**
+
+- Clients can check their current subscriptions using the `PUBSUB channels` command.
+- Use `subscribe` again to re-subscribe to channels if needed.
