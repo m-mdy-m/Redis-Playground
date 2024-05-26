@@ -266,6 +266,9 @@ Redis Pub/Sub facilitates real-time communication between applications. Let's br
 
 
 ## Command Pub/Sub
+
+### `SUBSCIBE` channel [channel ...]
+
 **Function:** Establishes a subscription for a client to receive messages published to specific channels in the Redis Pub/Sub messaging system.
 
 **Arguments:**
@@ -310,3 +313,42 @@ message channel1 Hello from the publisher!
 
 
 
+### `PUBLISH` channel message
+**Function:** Publishes a message to a specified channel in the Redis Pub/Sub messaging system.
+
+**Arguments:**
+
+- `channel`: The name of the channel where you want to broadcast the message (string).
+- `message`: The content you want to send to clients subscribed to the channel (string or other data type depending on your configuration).
+
+**Returns:**
+
+- An integer representing the number of clients that received the message (can be 0 if no clients are subscribed to the channel).
+- In a Redis Cluster, the count only reflects clients connected to the same node as the publishing client.
+
+**Example:**
+
+```
+PUBLISH news_channel "Breaking news: Stock prices are soaring!"
+
+# Message received by subscribed clients (format):
+message news_channel "Breaking news: Stock prices are soaring!"
+```
+
+**Important Notes:**
+
+- `PUBLISH` is the core function for sending messages to clients subscribed to a specific channel.
+- The message is broadcasted to all currently subscribed clients for that channel.
+- The return value indicates how many clients potentially received the message, but it doesn't guarantee delivery as clients might be disconnected or miss messages due to network issues.
+- Messages are not stored persistently by Redis Pub/Sub. Clients need to be actively subscribed to receive them.
+
+**Key Points:**
+
+- `PUBLISH` is a fundamental tool for implementing real-time communication and event-driven architectures using Redis.
+- It enables efficient broadcasting of messages to interested clients subscribed to a particular channel.
+- Understanding the return value helps you gauge the potential reach of your message, although it doesn't guarantee delivery.
+
+**Additional Notes:**
+
+- The `subscribe` command allows clients to subscribe to channels and receive messages published to those channels.
+- Consider using persistent messaging systems if reliable message delivery and storage are crucial for your application.
