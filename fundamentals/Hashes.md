@@ -46,7 +46,8 @@ Redis Hashes provide a valuable tool for storing and managing structured data in
 ```bash
 HSET myhash name "Alice"
 HSET myhash age "30"
-HSET myhash city "New York"  ; Updates the existing "city" field
+HSET myhash city "New York"
+HSET user fname "mahdi" lname "mamashli"
 ```
 
 **Important Notes:**
@@ -60,3 +61,72 @@ HSET myhash city "New York"  ; Updates the existing "city" field
 
 - `HSET` is fundamental for working with Redis hashes, allowing you to store and manage key-value pairs within a single data structure.
 - The return value provides information on whether a new field was added or an existing one was modified.
+
+
+### `HGET` key field
+**Function:** Retrieves the value associated with a specific field within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve a value from (string).
+- `field`: The name of the specific field within the hash whose value you want to get (string).
+
+**Returns:**
+
+- A string containing the value associated with the specified field.
+  - If the key doesn't exist or the field is not present in the hash, `nil` is returned.
+
+**Example:**
+
+```bash
+HGET user fname  ; Returns "mahdi"
+HGET myhash non-existent-field  ; Returns nil (field doesn't exist)
+```
+
+**Important Notes:**
+
+- `HGET` is the primary way to access the values stored within a Redis hash based on their corresponding field names.
+- It's efficient for retrieving specific data points from a hash structure.
+- If the hash key doesn't exist or the field is not present in the hash, `HGET` returns `nil` to indicate the absence of the data.
+
+**Key Points:**
+
+- `HGET` is essential for reading and retrieving data from Redis hashes, allowing you to access individual field values.
+- The return value clearly indicates whether the requested field exists in the hash and provides the associated value if found.
+
+### `HGETALL` key
+**Function:** Retrieves all fields and their corresponding values from a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve all fields and values from (string).
+
+**Returns:**
+
+- An array containing all field-value pairs as alternating elements:
+    - The first element in the array is the name of the first field.
+    - The second element is the value associated with the first field.
+    - This pattern continues for all fields and their values in the hash.
+  - If the key doesn't exist, an empty list is returned.
+
+**Example:**
+
+```bash
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HGETALL myhash  ; Returns ["name", "Alice", "age", "30", "city", "New York"]
+```
+
+**Important Notes:**
+
+- `HGETALL` is useful for retrieving the entire contents of a hash, including all field-value pairs.
+- It provides a way to access all data stored within a hash structure at once.
+- The return value is an array, so you'll need to iterate through it to access individual field-value pairs depending on your programming language or client library.
+- Be mindful of the potential performance impact when retrieving large hashes, as `HGETALL` transfers all data at once. Consider using more targeted commands like `HGET` for specific fields if performance is a concern.
+
+**Key Points:**
+
+- `HGETALL` is a convenient way to get a complete snapshot of the data stored within a hash.
+- The return structure requires iterating through the array to access individual field-value pairs.
+- For performance-sensitive scenarios, consider using more targeted commands like `HGET` for specific data retrieval.
