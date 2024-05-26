@@ -229,3 +229,158 @@ SISMEMBER myset "grapefruit"  ; Returns 0 (member "grapefruit" doesn't exist)
 
 - `SISMEMBER` helps you write conditional logic in your code based on the existence of specific elements within a set.
 - It's a lightweight command compared to retrieving all members with `SMEMBERS` when you only need to know if a specific element exists.
+
+
+### `SRANDMEMBER` key [count]
+**Function:** Returns one or more random members from a set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to retrieve random members from (string).
+- `count` (optional argument): An integer specifying the number of random members to return:
+    - Positive `count`: Returns the specified number of unique members without repetition. If `count` is greater than the number of members in the set, all members will be returned.
+    - Negative `count` (**Redis 6.2 or later**): Returns the specified number of members, allowing duplicates (treated as absolute value). 
+
+**Returns:**
+
+- When no `count` argument is provided:
+    - A single string containing a random member from the set (or `nil` if the key doesn't exist or the set is empty).
+- When a positive `count` argument is provided:
+    - An array containing `count` unique members (strings or other data types depending on your configuration) chosen from the set.
+
+**Example:**
+
+```bash
+SADD myset "apple" "banana" "orange"
+
+# Get a single random member (without count)
+SRANDMEMBER myset ; Possible output: "apple", "banana", or "orange" (random selection)
+
+# Get 2 random members (without count, no duplicates)
+SRANDMEMBER myset 2 ; Possible output: ["apple", "banana"] or any combination of 2 unique members
+
+# Get 3 random members allowing duplicates (Redis 6.2 or later, with negative count)
+SRANDMEMBER myset -3  ; Possible outputs: ["apple", "apple", "banana"] or any combination including duplicates based on random selection (treated as absolute value of -3)
+```
+
+**Important Notes:**
+
+- `SRANDMEMBER` is a versatile way to retrieve random elements from a set.
+- The optional `count` argument allows you to control the number of members returned and whether duplicates are allowed (with negative `count` in Redis 6.2 or later).
+- When no `count` is provided, you get a single random member.
+
+**Key Points:**
+
+- `SRANDMEMBER` injects randomness into your application logic by providing a way to select random data points from a set.
+- It's useful for various scenarios, such as random user profile selection, recommendation engines, or implementing games with random elements.
+- Understanding the behavior with negative `count` (available in Redis 6.2 or later) allows you to tailor the random selection to your specific needs.
+
+
+### `SMOVE` source destination member
+**Function:** Moves a member (element) from one set to another set stored in the Redis database.
+
+**Arguments:**
+
+- `source`: The name of the set containing the member you want to move (string).
+- `destination`: The name of the set where you want to move the member (string).
+- `member`: The value (string or other data type depending on your configuration) that you want to move between the sets.
+
+**Returns:**
+
+- An integer representing the outcome:
+    - `1`: If the member was successfully moved from the source set to the destination set.
+    - `0`: If the member didn't exist in the source set (no operation performed).
+
+**Example:**
+
+```bash
+SADD myset1 "apple" "banana"
+SADD myset2 "orange" "grapefruit"
+
+SMOVE myset1 "apple" myset2  ; Moves "apple" from myset1 to myset2 - returns 1
+
+SMOVE myset1 "cherry" myset2 ; "cherry" doesn't exist in myset1 - returns 0
+```
+
+**Important Notes:**
+
+- `SMOVE` provides a way to efficiently transfer members between sets in Redis.
+- It's an atomic operation, meaning either the member is moved entirely or the operation fails completely.
+- If the member doesn't exist in the source set, `SMOVE` returns `0` but doesn't create the member in the destination set.
+
+**Key Points:**
+
+- `SMOVE` is crucial for managing data distribution and relationships between sets in your application.
+- The return value helps you understand the success of the move, indicating whether the member was actually present in the source set.
+- Consider using `SISMEMBER` to check if a member exists before attempting to move it to avoid unexpected behavior.
+
+
+### `SUNION` key [key ...]
+**Function:** Returns the members of the set resulting from the union of all the given sets.
+
+**Arguments:**
+
+- `key(s)`: One or more strings representing the names of the sets whose members you want to combine.
+
+**Returns:**
+
+- An array containing all the unique members (strings or other data types depending on your configuration) present in the union of the specified sets.
+- If any of the keys don't exist, the corresponding sets are considered empty.
+
+**Example:**
+
+```bash
+SADD set1 "apple" "banana"
+SADD set2 "orange" "mango"
+SADD set3 "apple" "grapefruit"
+
+SUNION set1 set2 set3  ; Returns ["apple", "banana", "orange", "mango", "grapefruit"] (all unique members from the union)
+```
+
+**Important Notes:**
+
+- `SUNION` performs a set operation that combines the elements from multiple sets, resulting in a new set containing all the unique members.
+- Order doesn't matter when specifying the sets for the union operation.
+- Keys that don't exist in the database are treated as empty sets during the union calculation.
+
+**Key Points:**
+
+- `SUNION` is a powerful tool for merging data from multiple sets into a single set containing only unique elements.
+- It's useful for various scenarios, such as finding common elements between user preferences or combining product categories from different sources.
+- Understanding how empty sets are handled ensures you get the expected outcome when some keys might not exist.
+
+#### `SUNIONSTORE` destintaion key [key ...]
+**Function:** Calculates the union of all the given sets and stores the resulting members in a new set at the specified destination key.
+
+**Arguments:**
+
+- `destination`: The name of the set where you want to store the members resulting from the union operation (string).
+- `key(s)`: One or more strings representing the names of the sets whose members you want to combine.
+
+**Returns:**
+
+- An integer representing the number of members that were added to the destination set as a result of the union operation.
+
+**Example:**
+
+```bash
+SADD set1 "apple" "banana"
+SADD set2 "orange" "mango"
+SADD set3 "apple" "grapefruit"
+
+SUNIONSTORE destination set1 set2 set3  ; Returns 4 (number of unique members added to "destination")
+SISMEMBERS destination ; Returns ["apple", "banana", "orange", "mango", "grapefruit"] (all unique members from the union stored in "destination")
+```
+
+**Important Notes:**
+
+- `SUNIONSTORE` combines the functionalities of `SUNION` (calculating the union) and `SADD` (adding members to a set) into a single command.
+- It performs the union operation on the specified sets and stores the resulting unique members in a new set identified by the `destination` key.
+- The return value indicates how many new members were added to the destination set, reflecting the outcome of the union operation.
+  - If the destination set already exists, its contents are overwritten with the union result.
+
+**Key Points:**
+
+- `SUNIONSTORE` is an efficient way to create a new set containing the combined unique elements from multiple existing sets.
+- It simplifies the process by avoiding the need for separate `SUNION` and `SADD` commands.
+- The return value helps you understand the effectiveness of the operation, indicating how many new members were added to the destination set.
