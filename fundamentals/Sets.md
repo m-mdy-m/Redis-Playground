@@ -384,3 +384,82 @@ SISMEMBERS destination ; Returns ["apple", "banana", "orange", "mango", "grapefr
 - `SUNIONSTORE` is an efficient way to create a new set containing the combined unique elements from multiple existing sets.
 - It simplifies the process by avoiding the need for separate `SUNION` and `SADD` commands.
 - The return value helps you understand the effectiveness of the operation, indicating how many new members were added to the destination set.
+
+### `SINTER` key [key ...]
+**Function:** Returns the members of the set resulting from the intersection of all the given sets.
+
+**Arguments:**
+
+- `key(s)`: One or more strings representing the names of the sets whose members you want to compare for intersection.
+
+**Returns:**
+
+- An array containing all the unique members (strings or other data types depending on your configuration) present in all the specified sets (common elements).
+- If any of the keys don't exist, the corresponding sets are considered empty sets.
+
+**Example:**
+
+```
+SADD set1 "apple" "banana" "grapefruit"
+SADD set2 "orange" "mango" "apple"
+SADD set3 "grapefruit" "kiwi" "apple"
+
+SINTER set1 set2 set3  ; Returns ["apple", "grapefruit"] (members present in all three sets)
+```
+
+**Important Notes:**
+
+- `SINTER` performs a set operation that identifies the elements common to all the specified sets.
+- Order doesn't matter when specifying the sets for the intersection operation.
+- Keys that don't exist in the database are treated as empty sets during the intersection calculation.
+
+**Key Points:**
+
+- `SINTER` is a powerful tool for finding elements that exist in all the specified sets.
+- It's useful for various scenarios, such as identifying common interests among users or finding products available in all warehouses. 
+- Understanding how empty sets are handled ensures you get the expected outcome when some keys might not exist.
+
+**Additional Notes:**
+
+- Redis also offers the `SINTERSTORE` command, which calculates the intersection and stores the resulting members in a new set at the specified destination key.
+
+### `SDIFF` key [key ...]
+**Function:** Returns the members of the set resulting from the difference between the first set and all the successive sets.
+
+**Arguments:**
+
+- `key`: The name of the set you want to consider as the base for the difference operation (string).
+- `key(s)`: One or more strings representing the names of the sets whose members you want to subtract from the base set.
+
+**Returns:**
+
+- An array containing all the unique members (strings or other data types depending on your configuration) present in the base set (`key`) but not in any of the successive sets (`key(s)`).
+- If any of the keys don't exist, the corresponding sets are considered empty sets.
+
+**Example:**
+
+```
+SADD set1 "apple" "banana" "grapefruit"
+SADD set2 "orange" "mango" "apple"
+SADD set3 "grapefruit" "kiwi"
+
+SDIFF set1 set2  ; Returns ["banana", "grapefruit"] (members in set1 but not in set2)
+
+SDIFF set1 set2 set3 ; Returns ["banana"] (members in set1 but not in set2 or set3)
+```
+
+**Important Notes:**
+
+- `SDIFF` performs a set operation that identifies elements present in the first set (`key`) but absent in any of the subsequent sets (`key(s)`).
+- The order of sets is important. The first set (`key`) is considered the base for the difference calculation.
+- Keys that don't exist in the database are treated as empty sets during the difference operation.
+
+**Key Points:**
+
+- `SDIFF` is a valuable tool for finding elements that are unique to a specific set compared to others.
+- It's useful for various scenarios, such as identifying user preferences that differ from a group or finding products available only in a particular store.
+- Understanding the order of sets and how empty sets are handled ensures you get the expected outcome.
+
+**Additional Notes:**
+
+- Redis also offers the `SDIFFSTORE` command, which calculates the set difference and stores the resulting members in a new set at the specified destination key.
