@@ -34,3 +34,66 @@ Redis Sets excel in various use cases due to their efficient operations and abil
 ## Redis Sets Command
 
 
+### `SADD` key member [member ...]
+**Function:** Adds one or more members (elements) to a set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to add members to (string).
+- `member(s)`: One or more values (strings or other data types depending on your configuration) that you want to add to the set.
+
+**Returns:**
+
+- An integer representing the number of members that were actually added to the set.
+    - If a member already exists in the set, it's not added again and isn't counted towards the return value.
+    - If the key doesn't exist yet, a new set is created and the specified members are added.
+
+**Example:**
+
+```
+SADD myset "apple" "banana" "apple"  ; "apple" is added only once
+SADD myset "orange" "mango"
+SCARD myset ; Returns 4 (the number of unique elements in the set)
+```
+
+**Important Notes:**
+
+- `SADD` is the primary way to add elements to sets in Redis.
+- Sets inherently store unique values, so adding a duplicate member has no effect.
+- If the key doesn't exist, `SADD` will create a new set with the specified members.
+- The return value helps you understand how many new members were added to the set in the current operation.
+
+**Key Points:**
+
+- `SADD` is fundamental for building and managing sets in Redis, allowing you to efficiently add unique elements.
+- The return value provides information on the effectiveness of the operation, indicating how many new members were actually added.
+
+### `SMEMBERS` key
+**Function:** Returns all the members (elements) existing in a set stored at the specified key in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to retrieve members from (string).
+
+**Returns:**
+
+- An array containing all the members (strings or other data types depending on your configuration) present in the set.
+  - If the key doesn't exist, the set is empty, or an error occurs, an empty list is returned.
+
+**Example:**
+
+```
+SADD myset "apple" "banana" "orange"
+SMEMBERS myset  ; Returns ["apple", "banana", "orange"] (all members in the set)
+```
+
+**Important Notes:**
+
+- `SMEMBERS` is the primary way to retrieve all the elements stored within a set in Redis.
+- It provides a complete picture of the set's contents at a given point in time.
+- If the key doesn't exist or the set is empty, `SMEMBERS` returns an empty list to indicate the absence of members.
+
+**Key Points:**
+
+- `SMEMBERS` is essential for iterating through all elements in a set or accessing the entire set's data at once.
+- The return value ensures you have a clear understanding of the set's current contents.
