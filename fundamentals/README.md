@@ -442,3 +442,73 @@ pmessage news.* news_channel Breaking news: Stock prices are soaring!
 
 - The `PUNSUBSCRIBE` command allows clients to unsubscribe from specific patterns or all patterns.
 - `PSUBSCRIBE` offers a more flexible approach to subscribing compared to `SUBSCRIBE` for channel-specific subscriptions. 
+
+
+### `PUBSUB` subcommand [argument [argument ...]]
+**Function:** Provides various introspection commands for examining the state of the Pub/Sub system within a Redis server.
+
+**Arguments:**
+
+- `subcommand`: A string specifying the specific introspection operation you want to perform.
+  - Available subcommands include:
+      - `channels [pattern]`: Lists all channels or channels matching a pattern (using wildcards) to which at least one client is currently subscribed.
+      - `numsub [channel [channel ...]]`: Returns the number of clients subscribed to the specified channel(s).
+      - `numsub <pattern>`: Returns the number of clients subscribed to channels matching the specified pattern.
+      - `help`: Provides a list of available `PUBSUB` subcommands and a brief description of each.
+
+**Returns:**
+
+- The specific return value depends on the subcommand used:
+  - `channels [pattern]`: An array of strings representing the channel names.
+  - `numsub [channel [channel ...]]`: An array of integers, where each element represents the number of clients subscribed to the corresponding channel.
+  - `numsub <pattern>`: An integer representing the total number of clients subscribed to channels matching the pattern.
+  - `help`: An array of strings describing the available subcommands.
+
+**Example:**
+
+```bash
+# List all channels with subscribers:
+PUBSUB channels
+
+# Example response:
+1) "channel1"
+2) "news_feed"
+
+# Get the number of subscribers for specific channels:
+PUBSUB numsub channel1 channel2
+
+# Example response:
+1) 10 (number of subscribers for channel1)
+2) 2 (number of subscribers for channel2)
+
+# Get the number of subscribers for channels matching a pattern:
+PUBSUB numsub news*
+
+# Example response:
+1) 12 (total number of subscribers for channels starting with "news")
+
+# Get help on available subcommands:
+PUBSUB help
+
+# Example response:
+1) "channels <pattern>"
+2) "numsub <channel [channel ...]]"
+3) ... (descriptions of other subcommands)
+```
+
+**Important Notes:**
+
+- `PUBSUB` itself doesn't directly publish or subscribe to channels. It provides information about the current state of the Pub/Sub system.
+- The subcommands offer insights into which channels have active subscriptions and the number of clients subscribed to them.
+  - This can be helpful for debugging, monitoring, and understanding the overall Pub/Sub usage.
+
+**Key Points:**
+
+- `PUBSUB` is a meta-command for inspecting the Pub/Sub system, providing valuable information for managing and troubleshooting your messaging setup.
+- The various subcommands cater to different needs: listing subscribed channels, checking subscription counts, and exploring available options.
+- Understanding the return values of each subcommand helps you interpret the state of the Pub/Sub system.
+
+**Additional Notes:**
+
+- Use `SUBSCRIBE`, `UNSUBSCRIBE`, `PSUBSCRIBE`, and `PUNSUBSCRIBE` for actively participating in the Pub/Sub communication by subscribing and unsubscribing to channels or patterns.
+- Consider using `PUBSUB` commands to monitor Pub/Sub activity and ensure your messaging system functions as expected.
