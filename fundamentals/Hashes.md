@@ -26,5 +26,37 @@ Redis Hashes provide a valuable tool for storing and managing structured data in
 
 ## Redis Hashes Command
 
+### `HSET` key field value
+**Function:** Sets the field to a new value within a hash stored in the Redis database.
 
+**Arguments:**
 
+- `key`: The name of the hash you want to modify (string).
+- `field`: The name of the specific field within the hash that you want to set (string).
+- `value`: The new value (string or other data type depending on your configuration) to assign to the field (string).
+
+**Returns:**
+
+- An integer representing the outcome:
+    - `1`: If the field is a new field and the value was set.
+    - `0`: If the field already existed and the value was updated.
+
+**Example:**
+
+```bash
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"  ; Updates the existing "city" field
+```
+
+**Important Notes:**
+
+- `HSET` is the primary way to create or modify field-value pairs within a Redis hash.
+- If the hash doesn't exist yet, `HSET` will create a new hash with the specified field and value.
+- If the field already exists, `HSET` will overwrite the existing value with the new one.
+- The return value indicates whether a new field was created or an existing one was updated.
+
+**Key Points:**
+
+- `HSET` is fundamental for working with Redis hashes, allowing you to store and manage key-value pairs within a single data structure.
+- The return value provides information on whether a new field was added or an existing one was modified.
