@@ -263,3 +263,50 @@ Redis Pub/Sub facilitates real-time communication between applications. Let's br
 - **Fire-and-Forget Delivery:** Messages are delivered at most once to currently subscribed clients. If a client is not connected when a message is published, it misses the message. Redis does not guarantee message ordering.
 - **Multiple Channels:** A client can subscribe to multiple channels using separate `SUBSCRIBE` commands for each channel.
 - **Pattern Matching:** Redis also supports subscribing to patterns using `PSUBSCRIBE` (e.g., `PSUBSCRIBE sports*` to receive messages from channels that start with "sports").
+
+
+## Command Pub/Sub
+**Function:** Establishes a subscription for a client to receive messages published to specific channels in the Redis Pub/Sub messaging system.
+
+**Arguments:**
+
+- `channel(s)`: One or more strings representing the names of the channels you want to subscribe to. You can specify multiple channels in a single `subscribe` command.
+
+**Returns:**
+
+- Nothing is explicitly returned by the command itself. However, upon successful subscription, Redis sends a message to the client for each channel in the format: "subscribe <channel> <number of channels currently subscribed to>".
+- Subsequently, whenever a message is published to a subscribed channel, the client receives another message in the format: "message <channel> <message payload>".
+
+**Example:**
+
+```bash
+SUBSCRIBE channel1 channel2
+
+# After successful subscription (messages sent by Redis server):
+subscribe channel1 2 (indicates subscribed to 2 channels)
+subscribe channel2 2
+
+# Example message received upon publishing to a channel:
+message channel1 Hello from the publisher!
+```
+
+**Important Notes:**
+
+- `subscribe` is the foundation for clients to participate in the Redis Pub/Sub messaging pattern.
+- Clients can subscribe to multiple channels in a single command.
+- Once subscribed, clients will receive messages published to any of the subscribed channels.
+- The message format includes the channel name and the actual message payload.
+
+**Key Points:**
+
+- `subscribe` is essential for building real-time communication applications using Redis Pub/Sub.
+- Subscribing to multiple channels allows clients to listen for events or updates on various topics.
+- Understanding the message format helps you parse the received data and react accordingly within your application.
+
+**Additional Notes:**
+
+- The `unsubscribe` command allows clients to unsubscribe from specific channels or all channels.
+- Redis also offers the `psubscribe` command for subscribing to patterns of channels using wildcards.
+
+
+
