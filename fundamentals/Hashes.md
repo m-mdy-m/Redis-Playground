@@ -232,3 +232,102 @@ HDEL myhash non-existent-field  ; Doesn't remove anything (field doesn't exist) 
 
 - `HDEL` provides targeted removal of fields from a hash, allowing you to manage the data stored within the structure.
 - The return value helps you understand the outcome of the deletion operation.
+
+### `HEXISTS` key field
+**Function:** Checks if a specific field exists within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to check for a field (string).
+- `field`: The name of the specific field whose existence you want to verify (string).
+
+**Returns:**
+
+- An integer representing the existence of the field:
+    - `1`: If the field exists in the hash.
+    - `0`: If the field does not exist in the hash.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HEXISTS myhash name  ; Returns 1 (field "name" exists)
+HEXISTS myhash non-existent-field  ; Returns 0 (field doesn't exist)
+```
+
+**Important Notes:**
+
+- `HEXISTS` is a convenient way to verify the presence of a specific field before performing operations that rely on it.
+- It's efficient for checking field existence without retrieving the actual value.
+- The return value provides a clear indication of whether the field is present in the hash or not.
+
+**Key Points:**
+
+- `HEXISTS` helps you write conditional logic in your code based on the existence of specific data within a hash.
+- It's a lightweight command compared to retrieving the entire field-value pair with `HGET`.
+
+### `HKETS` key
+**Function:** Returns all field names (keys) within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve field names from (string).
+
+**Returns:**
+
+- An array containing all field names (strings) present in the hash.
+  - If the key doesn't exist, the hash is empty, or an error occurs, an empty list is returned.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HKEYS myhash  ; Returns ["name", "age", "city"] (all field names in the hash)
+```
+
+**Important Notes:**
+
+- `HKEYS` provides a way to retrieve all the field names (keys) associated with a hash.
+- It's useful for iterating through all fields in the hash or getting an overview of the data stored within it.
+- The return value is an array, so you'll need to iterate through it to access individual field names depending on your programming language or client library.
+
+**Key Points:**
+
+- `HKEYS` complements `HGETALL` by providing just the field names, which can be sufficient for some scenarios.
+- It's a lightweight alternative to retrieving all field-value pairs, especially for large hashes.
+
+### `HVALS` key
+**Function:** Retrieves all values associated with the fields within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve values from (string).
+
+**Returns:**
+
+- An array containing all the values associated with the fields in the hash (strings or other data types depending on your Redis configuration).
+  - If the key doesn't exist, the hash is empty, or an error occurs, an empty list is returned.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HVALS myhash  ; Returns ["Alice", "30", "New York"] (all field values in the hash)
+```
+
+**Important Notes:**
+
+- `HVALS` provides a way to retrieve all the values stored within a hash, similar to `HGETALL` but returning only the values, not the field names.
+- It's useful for processing all data points in the hash without needing the corresponding field names.
+- The return value is an array, so you'll need to iterate through it to access individual values depending on your programming language or client library.
+- Be mindful of potential performance implications for large hashes, as `HVALS` transfers all values at once.
+
+**Key Points:**
+
+- `HVALS` offers an alternative to `HGETALL` when you only need the data values within the hash.
+- Consider using more targeted commands like `HGET` for specific fields if performance is a concern for large hashes.
