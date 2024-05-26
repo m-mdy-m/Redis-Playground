@@ -130,3 +130,105 @@ HGETALL myhash  ; Returns ["name", "Alice", "age", "30", "city", "New York"]
 - `HGETALL` is a convenient way to get a complete snapshot of the data stored within a hash.
 - The return structure requires iterating through the array to access individual field-value pairs.
 - For performance-sensitive scenarios, consider using more targeted commands like `HGET` for specific data retrieval.
+
+
+### `HMGET` key field [field ...]
+**Function:** Retrieves the values associated with a specified set of fields within a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to retrieve values from (string).
+- `field(s)`: One or more field names (strings) whose corresponding values you want to get.
+
+**Returns:**
+
+- An array containing the values associated with the requested fields in the same order as they were specified:
+    - If a field doesn't exist in the hash, `nil` is placed in the corresponding position of the array.
+    - If the key doesn't exist, an empty list is returned.
+
+**Example:**
+
+```bash
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HMGET myhash name age non-existent-field  ; Returns ["Alice", "30", nil]
+```
+
+**Important Notes:**
+
+- `HMGET` is an efficient way to retrieve values for multiple fields within a single Redis hash operation.
+- It's particularly useful when you need to access specific data points without retrieving the entire hash.
+- The return value ensures that the order of retrieved values corresponds to the order of the requested fields.
+- Even if some fields don't exist in the hash, `HMGET` still returns an array with `nil` values for those missing fields, maintaining the order and providing a clear picture of which fields were found and which were not.
+
+**Key Points:**
+
+- `HMGET` optimizes retrieval of specific data points from a hash by fetching them in a single request.
+- It helps maintain code clarity by retrieving multiple values at once.
+- The return value provides information on both existing and missing fields, ensuring you understand the retrieved data context.
+
+### `HLEN` key
+**Function:** Returns the number of fields (key-value pairs) stored within a hash in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to get the field count for (string).
+
+**Returns:**
+
+- An integer representing the total number of fields currently present in the hash.
+  - If the key doesn't exist, the hash is empty, or an error occurs, `0` is returned.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HLEN myhash  ; Returns 3 (the number of key-value pairs in the hash)
+```
+
+**Important Notes:**
+
+- `HLEN` is a quick way to determine the size (number of fields) of a hash.
+- It's helpful for various purposes, such as iterating through all fields in the hash or checking if the hash is empty before performing other operations.
+- If the key doesn't exist, `HLEN` returns `0` to indicate that the hash is empty (not created yet).
+
+**Key Point:**
+
+- `HLEN` provides a lightweight way to get the size of a hash without retrieving all the field-value pairs.
+
+### `HDEL` key field [field ...]
+**Function:** Removes the specified fields from a hash stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the hash you want to modify (string).
+- `field(s)`: One or more field names (strings) that you want to remove from the hash.
+
+**Returns:**
+
+- An integer representing the number of fields that were actually removed from the hash.
+
+**Example:**
+
+```
+HSET myhash name "Alice"
+HSET myhash age "30"
+HSET myhash city "New York"
+HDEL myhash name age  ; Removes "name" and "age" fields - returns 2
+HDEL myhash non-existent-field  ; Doesn't remove anything (field doesn't exist) - returns 0
+```
+
+**Important Notes:**
+
+- `HDEL` is the primary way to delete specific fields from a Redis hash.
+- You can specify multiple fields to remove them in a single operation.
+- If a field doesn't exist in the hash, it's simply ignored, and the deletion count won't include it.
+- The return value indicates the actual number of fields that were successfully removed, which might be less than the number of specified fields if some were already missing.
+
+**Key Points:**
+
+- `HDEL` provides targeted removal of fields from a hash, allowing you to manage the data stored within the structure.
+- The return value helps you understand the outcome of the deletion operation.
