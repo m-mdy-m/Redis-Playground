@@ -29,3 +29,128 @@ Sorted Sets combine the functionality of sets and hashes, offering a unique data
 
 
 ## Redis Sorted Set Command
+
+### `ZADD` key [NX|XX] [CH] [INCR] score member [score member ...]
+**Function:** Adds one or more members (elements) with corresponding scores to a sorted set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the sorted set you want to add members to (string).
+- `score member(s)`: One or more score-member pairs. 
+  - `score`: A floating-point number representing the score for the member (important for sorting).
+  - `member`: The value (string or other data type depending on your configuration) that you want to add to the sorted set. You can specify multiple score-member pairs in a single command.
+
+**Returns:**
+
+- An integer representing the number of members that were actually added to the sorted set.
+  - If a member already exists in the set with a different score, the score is updated, and the element is placed at the appropriate position based on the new score.
+  - If the key doesn't exist, a new sorted set is created with the specified members and scores.
+
+**Example:**
+
+```bash
+ZADD myzset 10 "apple" 5 "banana" 20 "orange"  ; Adds three members with scores
+ZRANGE myzset 0 -1 WITHSCORES ; Returns ["banana", "5.0"] ... ["orange", "20.0"] (sorted elements with scores)
+```
+
+**Important Notes:**
+
+- `ZADD` is the primary way to add elements with scores to a sorted set in Redis.
+- Scores are crucial for sorting the elements within the set. Lower scores generally appear first.
+- Existing members with the same name are updated with the new score and repositioned based on the updated score.
+- If the key doesn't exist, `ZADD` creates a new sorted set with the specified members and scores.
+
+**Key Points:**
+
+- `ZADD` is fundamental for building and managing sorted sets in Redis, allowing you to efficiently add elements with associated scores that determine their order.
+- The return value helps you understand how many new members were added or how many existing members were updated based on the score changes.
+
+### `ZRANGE` key start stop [WITHSCORES]
+**Function:** Returns a specified range of elements (members) from a sorted set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the sorted set you want to retrieve elements from (string).
+- `<start>`: The starting index (zero-based) of the range you want to retrieve.
+- `<stop>`: The ending index (inclusive) of the range you want to retrieve.
+
+**Optional arguments:**
+
+- `WITHSCORES` (optional): Includes the scores associated with each member in the returned elements.
+- `REV` (optional): Reverses the order of elements returned (highest score to lowest score).
+
+**Returns:**
+
+- When `WITHSCORES` is not used:
+    - An array containing the members (strings or other data types depending on your configuration) within the specified range, sorted according to their scores.
+- When `WITHSCORES` is used:
+    - An array of arrays, where each inner array contains two elements:
+        - The member (string or other data type)
+        - The corresponding score (floating-point number)
+
+**Example:**
+
+```
+ZADD myzset 10 "apple" 5 "banana" 20 "orange"
+ZRANGE myzset 0 1  ; Returns ["banana", "apple"] (elements from index 0 to 1, sorted by score)
+ZRANGE myzset 0 1 WITHSCORES ; Returns [["banana", "5.0"], ["apple", "10.0"]] (elements with scores)
+ZRANGE myzset 0 -1 REV ; Returns ["orange", "banana", "apple"] (elements reversed, highest to lowest score)
+```
+
+**Important Notes:**
+
+- `ZRANGE` is a versatile way to retrieve elements from a sorted set based on their position (index) within the sorted order determined by scores.
+- The `<start>` and `<stop>` indices are zero-based, meaning 0 represents the first element.
+  - A negative `<stop>` index counts from the end of the set (-1 being the last element).
+- The `WITHSCORES` option allows you to retrieve the scores along with the members.
+- The `REV` option reverses the order of returned elements, providing flexibility in how you want to access the sorted set.
+
+**Key Points:**
+
+- `ZRANGE` is essential for iterating through or accessing specific portions of a sorted set based on their ranking determined by scores.
+- The optional arguments (`WITHSCORES` and `REV`) enhance the functionality by providing additional information and control over the returned data.
+
+### `ZREVRANGE` key start stop [WITHSCORES]
+**Function:** Returns a specified range of elements (members) in reverse order from a sorted set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the sorted set you want to retrieve elements from (string).
+- `<max>`: The ending index (zero-based) of the range you want to retrieve, considering the elements in reverse order.
+- `<min>`: The starting index (zero-based) of the range you want to retrieve, considering the elements in reverse order.
+
+**Optional arguments:**
+
+- `WITHSCORES` (optional): Includes the scores associated with each member in the returned elements.
+
+**Returns:**
+
+- When `WITHSCORES` is not used:
+    - An array containing the members (strings or other data types depending on your configuration) within the specified range, starting from the highest score and going down to the lower scores.
+- When `WITHSCORES` is used:
+    - An array of arrays, where each inner array contains two elements:
+        - The member (string or other data type)
+        - The corresponding score (floating-point number)
+
+**Example:**
+
+```
+ZADD myzset 10 "apple" 5 "banana" 20 "orange"
+ZREVRANGE myzset 1 0  ; Returns ["orange", "apple"] (elements from index 1 to 0 in reverse order, highest to lowest score)
+ZREVRANGE myzset 2 -1 WITHSCORES ; Returns [["orange", "20.0"], ["banana", "5.0"]] (elements with scores, starting from the highest)
+ZREVRANGE myzset 0 -1 ; Returns ["orange", "banana", "apple"] (full range in reverse order, equivalent to ZRANGE 0 -1 REV)
+```
+
+**Important Notes:**
+
+- `ZREVRANGE` is similar to `ZRANGE` but retrieves elements in descending order based on their scores.
+- The `<max>` and `<min>` indices are zero-based and interpreted in reverse order.
+  - 0 represents the element with the highest score, and the index increases as you move towards lower scores.
+- A negative `<min>` index counts from the end of the set (-1 being the element with the lowest score).
+- The `WITHSCORES` option allows you to retrieve the scores along with the members in reverse order.
+
+**Key Points:**
+
+- `ZREVRANGE` is valuable when you need to access the elements of a sorted set starting from the highest score and working your way down.
+- Understanding the reversed indexing is crucial for specifying the desired range within the sorted set.
+- The `WITHSCORES` option provides additional context by including the scores along with the members.
