@@ -50,7 +50,7 @@ Redis Sets excel in various use cases due to their efficient operations and abil
 
 **Example:**
 
-```
+```bash
 SADD myset "apple" "banana" "apple"  ; "apple" is added only once
 SADD myset "orange" "mango"
 SCARD myset ; Returns 4 (the number of unique elements in the set)
@@ -82,7 +82,7 @@ SCARD myset ; Returns 4 (the number of unique elements in the set)
 
 **Example:**
 
-```
+```bash
 SADD myset "apple" "banana" "orange"
 SMEMBERS myset  ; Returns ["apple", "banana", "orange"] (all members in the set)
 ```
@@ -97,3 +97,101 @@ SMEMBERS myset  ; Returns ["apple", "banana", "orange"] (all members in the set)
 
 - `SMEMBERS` is essential for iterating through all elements in a set or accessing the entire set's data at once.
 - The return value ensures you have a clear understanding of the set's current contents.
+
+
+### `SCARD` key
+**Function:** Returns the cardinality (number of members) of the set stored at the specified key in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to get the member count for (string).
+
+**Returns:**
+
+- An integer representing the total number of unique members currently present in the set.
+  - If the key doesn't exist, the set is empty, or an error occurs, `0` is returned.
+
+**Example:**
+
+```bash
+SADD myset "apple" "banana" "orange"
+SCARD myset  ; Returns 3 (the number of unique members in the set)
+```
+
+**Important Notes:**
+
+- `SCARD` is a lightweight and efficient way to determine the size (number of elements) of a set in Redis.
+- It's useful for various purposes, such as checking if a set is empty before performing other operations or iterating through all members knowing the total count.
+- If the key doesn't exist, `SCARD` returns `0` to indicate that the set is empty (not created yet).
+
+**Key Points:**
+
+- `SCARD` provides a quick way to get the size of a set without retrieving all the members.
+- The return value helps you make informed decisions in your code based on the set's cardinality.
+
+
+### `SREM` key member [member ...]
+**Function:** Removes one or more members (elements) from a set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to modify (string).
+- `member(s)`: One or more values (strings or other data types depending on your configuration) that you want to remove from the set.
+
+**Returns:**
+
+- An integer representing the number of members that were actually removed from the set.
+    - If a member doesn't exist in the set, it's not removed and isn't counted towards the return value.
+    - Members specified multiple times are only removed once.
+
+**Example:**
+
+```
+SADD myset "apple" "banana" "orange" "apple"  ; "apple" is added twice
+SREM myset "apple" "grapefruit"  ; Removes "apple" (once) - returns 1 (even though "grapefruit" wasn't present)
+SCARD myset ; Returns 2 (the number of remaining unique elements in the set)
+```
+
+**Important Notes:**
+
+- `SREM` is the primary way to remove elements from sets in Redis.
+- It attempts to remove the specified members, but only existing members are actually removed.
+- The return value reflects the number of successfully removed members, not the total number of members specified.
+- Specifying non-existent members in `SREM` doesn't affect the operation or the return value.
+
+**Key Points:**
+
+- `SREM` is essential for managing sets by allowing you to remove specific elements.
+- The return value indicates the effectiveness of the operation, showing how many members were actually removed.
+- Understanding how `SREM` handles non-existent members is crucial to avoid unexpected behavior in your code.
+
+### `SPOP` key [count]
+**Function:** Removes and returns a random member from a set stored in the Redis database.
+
+**Arguments:**
+
+- `key`: The name of the set you want to remove a member from (string).
+
+**Returns:**
+
+- A string containing the randomly removed member (or `nil` if the key doesn't exist or the set is empty).
+
+**Example:**
+
+```
+SADD myset "apple" "banana" "orange"
+SPOP myset  ; Returns a random member from the set (e.g., "apple", "banana", or "orange")
+SCARD myset ; Returns 2 (one member less after SPOP)
+```
+
+**Important Notes:**
+
+- `SPOP` provides a way to retrieve and remove a random element from a set in a single operation.
+- The removed member is not guaranteed to be unique, meaning it's possible to get the same member multiple times if called repeatedly on a small set.
+- If the key doesn't exist or the set is empty, `SPOP` returns `nil` to indicate the absence of members.
+
+**Key Points:**
+
+- `SPOP` is useful for selecting a random element from a set for various purposes, such as random sampling or implementing game mechanics.
+- The return value ensures you get a random member and reflects whether the set was empty or not.
+- Be mindful of potential duplicate selections, especially for small sets, if uniqueness is crucial for your use case.
