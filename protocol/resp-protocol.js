@@ -16,7 +16,7 @@ const file = path.join(__dirname, "ips.txt");
 function generateResp(ips) {
     for (let i = 0; i < ips.length; i++) {
         const ip = ips[i];
-        fs.writeFileSync(file,`*3\\r\\n$3\\r\\nSET\\r\\n${ip.length}\\r\\n${ip}\\r\\n$1\\r\\n`,'utf-8')
+        fs.writeFileSync(file,`*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n`,'utf-8')
     }
 }
 const ips = fs.readFileSync(sourcePath, "utf-8").split('\r\n')
