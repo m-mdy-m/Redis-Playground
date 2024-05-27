@@ -4,7 +4,7 @@ file = 'allkeys.txt'
 url = 'redis://localhost:6379'
 query = '*'
 print('Read Keys...', end='')
-clint = redis.StrictRedis.from_url(url=url,decode_responses=True)
+clint = redis.from_url(url=url,decode_responses=True)
 
 keys = clint.keys(query)
 print(f'{len(keys)} keys found')
@@ -25,8 +25,6 @@ with open(file,'w',newline='\n',encoding='utf-8') as f:
         values = clint.mget(keys)
         for i in zip(keys,values):
             f.write(i[0])
-            f.write('\n')
-            f.write(i[1])
             f.write('\n')
 
 print('\nProcessing Done...')
