@@ -32,12 +32,47 @@ the first byte of a RESP response identifies the data type. Here's a breakdown:
 * `$`: Bulk String
 * `*`: Array
 
+
+**Line Endings:**
+
+In RESP communication, line endings are crucial for separating commands and responses. The standard line ending sequence used is `<CR><LF>`, which translates to:
+
+* `<CR>` (Carriage Return): Represented by the character `\r`. This character moves the cursor to the beginning of the current line without advancing to the next line.
+* `<LF>` (Line Feed): Represented by the character `\n`. This character advances the cursor to the next line.
+
+**Generating RESP Protocol:**
+
+While RESP is typically handled by client libraries, here's a basic idea of how you might construct a simple RESP request manually:
+
+```bash
+*2\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$7\r\nmyvalue\r\n
+```
+
+This example represents a RESP request to set a key-value pair. Let's break it down:
+
+* `*2`: Indicates an Array with two elements (command and arguments)
+* `\r\n`: Line ending sequence after the array size
+* `$3`: Length of the first Bulk String (command)
+* `\r\n`: Line ending sequence after the Bulk String length
+* `SET`: The command to set a key-value pair
+* `\r\n`: Line ending sequence after the command
+* `$5`: Length of the second Bulk String (key)
+* `\r\n`: Line ending sequence after the Bulk String length
+* `mykey`: The key to be set
+* `\r\n`: Line ending sequence after the key
+* `$7`: Length of the third Bulk String (value)
+* `\r\n`: Line ending sequence after the Bulk String length
+* `myvalue`: The value to be associated with the key
+* `\r\n`: Line ending sequence after the value (implicit end of request)
+
+
 **Real-World Example:**
 
 Imagine a social media application using Redis to store user information. Here's a simplified example of how RESP might be used:
 
-1. **Client Request:** The client sends a command to get a user's name, represented as a RESP Array of Bulk Strings: `["GET", "username", "user_id:123"]`
-2. **Server Response:** The Redis server retrieves the username for user ID 123 and responds with a Simple String: `"+JohnDoe"`
+1. **Client Request:** The client sends a command to get a user's name, represented as a RESP Array of Bulk Strings: `["GET", "username", "user_id:123"]\r\n`
+2. **Server Response:** The Redis server retrieves the username for user ID 123 and responds with a Simple String: `"+JohnDoe\r\n"`
+
 
 **Additional Points:**
 
