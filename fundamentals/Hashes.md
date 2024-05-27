@@ -62,7 +62,54 @@ HSET user fname "mahdi" lname "mamashli"
 - `HSET` is fundamental for working with Redis hashes, allowing you to store and manage key-value pairs within a single data structure.
 - The return value provides information on whether a new field was added or an existing one was modified.
 
+### `HMSET` key field value [field value ...]
+**Function:** Sets the specified fields to their respective values in a hash stored at the key.
 
+**Arguments:**
+
+- `key`: The name of the hash you want to modify (string).
+- `field value pair(s)`: One or more comma-separated field-value pairs.
+  - `field`: The name of the field within the hash (string).
+  - `value`: The value you want to associate with the field (string or other data type depending on your configuration). You can specify multiple field-value pairs in a single command.
+
+**Returns:**
+
+- An integer representing the number of fields that were successfully set.
+  - If a field already exists in the hash, its value is overwritten with the new provided value.
+  - If the key doesn't exist, a new hash is created with the specified fields and values.
+
+**Example:**
+
+```bash
+HMSET myhash name "Alice" age 30 city "New York"  ; Sets three field-value pairs
+HGETALL myhash                                    ; Returns all fields and values in the hash
+
+# Example response:
+1) "name"
+2) "Alice"
+3) "age"
+4) "30"
+5) "city"
+6) "New York"
+```
+
+**Important Notes:**
+
+- `HMSET` is the primary way to add or update multiple fields within a hash in Redis.
+- It allows you to set several field-value pairs in a single command, improving efficiency.
+- Existing fields are overwritten with the new values provided.
+- If the key doesn't exist, `HMSET` creates a new hash with the specified fields and values.
+
+**Key Points:**
+
+- `HMSET` is fundamental for building and populating hashes with various key-value pairs.
+- The ability to set multiple fields at once makes it a convenient tool for initializing or modifying hash data.
+- The return value helps you confirm how many fields were successfully added or updated.
+
+**Additional Notes:**
+
+- Consider using `HGETALL` to retrieve all fields and their corresponding values from a hash.
+- There are other commands for specific hash operations, such as `HGET` (get a single field value), `HSETNX` (set a field only if it doesn't exist), and `HINCRBY` (increment the value of a field numerically).
 ### `HGET` key field
 **Function:** Retrieves the value associated with a specific field within a hash stored in the Redis database.
 
