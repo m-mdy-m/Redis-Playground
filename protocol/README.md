@@ -1,4 +1,4 @@
-## Explanation of Redis Protocol (RESP)
+### Explanation of Redis Protocol (RESP)
 
 **RESP (REdis Serialization Protocol)** is a simple yet powerful protocol used for communication between Redis clients and the Redis server. It offers several key advantages:
 
@@ -70,11 +70,56 @@ This example represents a RESP request to set a key-value pair. Let's break it d
 
 Imagine a social media application using Redis to store user information. Here's a simplified example of how RESP might be used:
 
-1. **Client Request:** The client sends a command to get a user's name, represented as a RESP Array of Bulk Strings: `["GET", "username", "user_id:123"]\r\n`
-2. **Server Response:** The Redis server retrieves the username for user ID 123 and responds with a Simple String: `"+JohnDoe\r\n"`
-
+1. **Client Request:** The client sends a command to get a user's name, represented as a RESP Array of Bulk Strings: `["GET", "username", "user_id:123"]`
+2. **Server Response:** The Redis server retrieves the username for user ID 123 and responds with a Simple String: `"+JohnDoe"`
 
 **Additional Points:**
 
 * RESP offers multiple versions (RESP2 and RESP3) with some backward compatibility. The most common version in use is RESP3.
 * Several client libraries for various programming languages support working with RESP, simplifying development.
+
+**Generating a RESP Message:**
+
+1. **Asterisk (*):** The first byte indicates the number of arguments in the message, including the command itself. For example, `*3` signifies three arguments.
+
+2. **Carriage Return (CR) and Line Feed (LF):**  These characters (`\r\n`) represent a newline and are used after each element in the message.
+
+3. **Dollar Sign ($):**  When followed by a numeric value and newline, it denotes a Bulk String. Bulk Strings are used to store binary data or multi-line text.
+
+4. **Argument Length:**  This is the number of bytes in the following argument, represented as a numeric value followed by CR and LF.
+
+5. **Argument:**  The actual data you want to send,  followed by CR and LF.
+
+**Example:**
+
+Let's revisit the example of setting a key-value pair:
+
+**Command:** SET
+**Key:** name
+**Value:** Redis
+
+Here's the corresponding RESP message:
+
+```bash
+*3\r\n  // Three arguments (SET, name, Redis)
+$3\r\n  // SET is 3 characters long
+SET\r\n
+$4\r\n  // name is 4 characters long
+name\r\n
+$5\r\n  // Redis is 5 characters long
+Redis\r\n
+```
+
+**Explanation:**
+
+* The first line `*3\r\n` indicates there are three arguments (`SET`, `name`, and `Redis`).
+* The next three lines represent each argument:
+    * `$3\r\nSET\r\n` - The command "SET" is 3 characters long.
+    * `$4\r\nname\r\n` - The key "name" is 4 characters long.
+    * `$5\r\nRedis\r\n` - The value "Redis" is 5 characters long.
+
+**Additional Points:**
+
+* RESP supports other data types like Integers (`:` prefix) and Errors (`-` prefix).
+* RESP messages are typically sent over TCP connections.
+* Client libraries for various programming languages handle the details of RESP message generation and parsing, making it easier for developers to interact with Redis.
