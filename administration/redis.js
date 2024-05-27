@@ -29,8 +29,10 @@ async function writeKeys(keys) {
     for (let i = 0; i < partitions.length; i++) {
       const keys = partitions[i];
       const values = await client.mGet(keys);
-      for (let i = 0; i < keys.length; i++) {
-        await fs.appendFile(file, `KEY:${keys[i]}\nVALUE:${values[i]}\n`);
+      let j = 0;
+      while (j < keys.length) {
+        await fs.appendFile(file, `KEY:${keys[j]}\nVALUE:${values[j]}\n`);
+        j++;
       }
     }
   } catch (error) {
