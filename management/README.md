@@ -12,19 +12,22 @@ In Redis, data is stored using various data structures called "objects." These o
 
 Redis provides several commands to manage and inspect objects:
 
-### **`OBJECT` subcommand [arguments [arguments ...]] :** This is a container command for various object introspection sub-commands. It offers the following functionalities:
-- **`OBJECT refkey`** (Object Reference): Returns the Redis data type associated with the specified key (`key`).
-
-  ```
-  redis> SET my_name "Alice"
-  OK
-  redis> OBJECT refkey my_name
-  string
-  ```
+### **`OBJECT` subcommand [arguments [arguments ...]] :** 
+This is a container command for various object introspection sub-commands. It offers the following functionalities:
+- **`OBJECT refcount key`**
+   - **Purpose:** Returns the number of times the value associated with the specified key is referenced. This is useful for debugging reference counting behavior and potential memory leaks.
+   - **Example:**
+     ```bash
+     redis> SET mylist [1, 2, 3]
+     OK
+     redis> OBJECT REFCOUNT mylist
+     (integer) 1
+     ```
+     In this case, the list "mylist" has a reference count of 1, meaning it's only referenced by one key.
 
 - **`OBJECT encoding key`** (Object Encoding): Reveals the specific encoding used by Redis to store the data for the given key. This can be helpful for understanding how data is represented internally and its potential performance implications.
 
-  ```
+  ```bash
   redis> HSET my_hash field1 "value1" field2 "value2"
   (integer) 2
   redis> OBJECT encoding my_hash
@@ -33,7 +36,7 @@ Redis provides several commands to manage and inspect objects:
 
 - **`OBJECT idletime key`** (Object Idletime): Reports the number of milliseconds since a key was last accessed. This can be useful for identifying inactive data that might be candidates for eviction under memory pressure.
 
-  ```
+  ```bash
   redis> SET my_data "some_data"
   OK
   # Wait some time for the key to become idle
@@ -46,7 +49,7 @@ Redis provides several commands to manage and inspect objects:
 
 **Example:**
 
-```
+```bash
 redis-cli
 127.0.0.1:6379> SET user:name Alice
 OK
