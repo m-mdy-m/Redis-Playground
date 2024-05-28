@@ -68,7 +68,7 @@ OK
 Refer to the official Redis documentation for a complete list: [https://redis.io/docs/latest/commands/object/](https://redis.io/docs/latest/commands/object/)
 
 
-## DUMP <keys>
+### DUMP <keys>
 **Purpose:**
 
 The `DUMP` command in Redis is used to create a serialized version of the data associated with a specific key. This serialized data can be used for various purposes, such as:
@@ -119,3 +119,47 @@ In this example:
 
 
 
+### RESTORE key ttl serialized-value [REPLACE]
+**Purpose:**
+
+The `RESTORE` command in Redis is used to create a new key in your Redis database and populate it with data retrieved from a serialized value. This serialized value typically comes from a previous use of the `DUMP` command or another external source that generates Redis-compatible serialized data.
+
+**Syntax:**
+
+The basic syntax of the `RESTORE` command is:
+
+```
+RESTORE key ttl serialized-value [REPLACE]
+```
+
+- `<key>`: The name of the new key to be created in your Redis database.
+- `<ttl>` (optional): The time-to-live (TTL) value for the new key, specified in milliseconds. If omitted, the new key will persist indefinitely.
+- `<serialized-value>`: The serialized data representation of the value you want to restore. This data should be obtained from a source compatible with Redis's internal serialization format.
+- `[REPLACE]` (optional): This flag indicates whether to replace an existing key with the same name. If omitted and the key already exists, `RESTORE` will return an error.
+
+**Return Value:**
+
+The `RESTORE` command returns the simple string reply `"OK"` upon successful creation of the new key. If there's an error (e.g., key already exists and `REPLACE` is not specified), it will return an error message.
+
+**Example:**
+
+```bash
+redis> DUMP mykey  # Assuming a key "mykey" exists with some value
+"\x86\x80\x04\x00\x00\x00\x00\x05mykey\x00\x00\x00\x05hello"
+
+redis> RESTORE newkey 10000 "\x86\x80\x04\x00\x00\x00\x00\x05mykey\x00\x00\x00\x05hello"
+OK
+
+# Now, "newkey" exists with the value "hello" and a TTL of 10 seconds.
+```
+
+**Important Notes:**
+
+- The serialized data provided to `RESTORE` must be compatible with the Redis version and data type of the original key. Mismatches might lead to unexpected behavior or errors.
+- The `REPLACE` flag allows overwriting existing keys, but use it with caution to avoid accidental data loss.
+- `RESTORE` is primarily used for restoring data from backups created with `DUMP`. It can also be used for migrating data between Redis instances or importing data from external sources if the data is in a compatible serialized format.
+
+**Additional Considerations:**
+
+- For large datasets, restoring data using `RESTORE` might not be the most efficient approach. Consider alternative restoration methods offered by Redis persistence mechanisms or dedicated backup tools.
+- Be mindful of security implications when using `RESTORE` to import data, especially if the data contains sensitive information. Ensure the data source and serialization format are trusted.
