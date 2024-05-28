@@ -14,6 +14,7 @@ The repository is structured into several folders, each focusing on a specific a
 * **fundamentals:** This folder covers the core building blocks of Redis, including data structures (strings, lists, sets, hashes), sorted sets, hyperlogs, and the Pub/Sub messaging model.
 * **operations:** Here, you'll find explorations of functionalities like bulk data insertion using various commands and delve into Redis database design principles.
 * **protocol:** This section explains interacting with Redis through its protocol (RESP). 
+* **management:** This explains how to manage redis.
 * **administration:**  This section covers Redis management tools, client interaction (e.g., redis-cli,client libraries), and explores Redis persistence options.
 * **advanced:** Here, you'll find deeper dives into topics like Redis replication, clusters, Lua scripting for server-side execution, RediSearch for full-text search capabilities, RedisBloom for creating space-efficient filters, and RedisJSON for working with JSON data structures within Redis.
 * **Example** Various examples
