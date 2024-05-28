@@ -1,0 +1,28 @@
+{
+  "name": "redis-playground",
+  "version": "1.0.0",
+  "description": "Added new README.md file to administration directory with 5 lines, including a title 'How Connect Redis to Nodejs' and 3 empty lines.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m-mdy-m/Redis-Playground.git"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "bugs": {
+    "url": "https://github.com/m-mdy-m/Redis-Playground/issues"
+  },
+  "keywords": [
+    "redis",
+    "redis-server",
+    "redis-clint",
+    "redis-cache"
+  ],
+  "homepage": "https://github.com/m-mdy-m/Redis-Playground#readme",
+  "author": "Mahdi",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "^4.6.14"
+  }
+}
