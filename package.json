@@ -23,6 +23,10 @@
   "author": "Mahdi",
   "license": "MIT",
   "dependencies": {
-    "redis": "^4.6.14"
+    "redis": "^4.6.14",
+    "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
   }
 }
