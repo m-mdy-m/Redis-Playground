@@ -1,11 +1,13 @@
-const { createClient } = require('redis')
-const clint = createClient()
-clint.on('error',err=>{
-    console.log('Redis Clint Error',err)
-})
-
-(async()=>{
-    await clint.connect()
-    await clint.set('key', 'value')
-    const value = await clint.get('key')
-})()
+const { createClient } = require("redis");
+const client = createClient();
+(async () => {
+  try {
+    await client.connect();
+    console.log("Connected to Redis server!");
+  } catch (error) {
+    console.error("Redis connection error:", error);
+  } finally {
+    // Always disconnect from Redis when your application exits
+    await client.quit();
+  }
+})();
