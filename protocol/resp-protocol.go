@@ -44,11 +44,11 @@ func generateResp(ips []*IP, targetFile *os.File) error {
 func main() {
 	// Open source file for reading
 	sourceFile, err := os.Open(sourcePath)
-	if err != nil {
-		fmt.Println("Error opening source file:", err)
-		return
-	}
-	defer sourceFile.Close()
+    if err != nil {
+        fmt.Println("Error opening source file:", err)
+        return
+    }
+    defer sourceFile.Close()
 
 	// Read file content
 	data, err := ioutil.ReadAll(sourceFile)
