@@ -1,5 +1,4 @@
-import { createClient } from 'redis'
-
+const { createClient } = require('redis')
 const clint = createClient()
 clint.on('error',err=>{
     console.log('Redis Clint Error',err)
