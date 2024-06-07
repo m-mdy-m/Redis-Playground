@@ -9,15 +9,22 @@
  * @Two_step
  * Data and convert into `RESP` style Conventions
  */
-import {writeFileSync,readFileSync} from 'fs'
+import {readFile} from 'fs'
 import { join} from 'path'
 const sourcePath = join(__dirname,'ip.source.txt')
-const file = join(__dirname,'ips.txt')
-function generateResp(ips:string[]) {
-    for (let i = 0; i < ips.length; i++) {
-        const ip:string = ips[i];
-        writeFileSync(file,`*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n`,'utf-8')
+
+function generateResp(ips: string[]): void {
+    for (const ip of ips) {
+      const command = `*3\r\n$3\r\nSET\r\n$${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
+      process.stdout.write(command);
     }
-}
-const ips = readFileSync(sourcePath, "utf-8").split('\r\n')
-generateResp(ips);
+  }
+readFile(sourcePath, 'utf-8', (err: Error | null, data: string) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      return;
+    }
+  
+    const ips = data.split('\n');
+    generateResp(ips);
+  });

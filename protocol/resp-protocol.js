@@ -11,11 +11,9 @@
  */
 const fs = require("fs");
 const path = require("path");
-const process = require("process");
 const sourcePath = path.join(__dirname, "ip.source.txt");
 function generateResp(ips) {
-  for (let i = 0; i < ips.length; i++) {
-    const ip = ips[i].trim()
+  for (const ip of ips) {
     try {
       const command = `*3\r\n$3\r\nSET\r\n$${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
       process.stdout.write(`${command}`);
