@@ -4,7 +4,7 @@ def generate_resp(ips):
     for ip in ips:
         sys.stdout.write(pattern.format(len(ip),ip))
 data = ''
-with open("ip.source", 'rt') as f:
+with open("ip.source.txt", 'rt') as f:
     data = f.read()
 ips = data.split('\n')
 
