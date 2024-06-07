@@ -1,13 +1,11 @@
-const { createClient } = require("redis");
-const client = createClient();
-(async () => {
-  try {
-    await client.connect();
-    console.log("Connected to Redis server!");
-  } catch (error) {
-    console.error("Redis connection error:", error);
-  } finally {
-    // Always disconnect from Redis when your application exits
-    await client.quit();
-  }
-})();
+const redis = require("redis");
+let file = 'keys.txt'
+let url = "localhost:6379";
+let query = "*";
+console.log("Read keys...");
+
+const clint = redis.createClient({
+  url: url,
+});
+const keys = clint.keys
+console.log(`${keys.length} found`);

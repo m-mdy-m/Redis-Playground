@@ -1,4 +1,4 @@
-## What are Objects in Redis?**
+## What are Objects in Redis?
 
 In Redis, data is stored using various data structures called "objects." These objects hold the actual information you manage within the database. Redis offers a variety of data structures, each with its own strengths and use cases, including:
 
