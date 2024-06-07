@@ -18,9 +18,7 @@ function generateResp(ips) {
     const ip = ips[i].trim()
     try {
       const command = `*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
-      process.stdout.write(command,(error)=>{
-        console.log("error",error);
-      })
+      process.stdout.write(command)
     } catch (error) {
       console.error("Error reading file:", error);
     }
