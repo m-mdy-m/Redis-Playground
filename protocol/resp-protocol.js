@@ -11,19 +11,18 @@
  */
 const fs = require("fs");
 const path = require("path");
+const process = require("process");
 const sourcePath = path.join(__dirname, "ip.source.txt");
-const file = path.join(__dirname, "ips.txt");
 function generateResp(ips) {
   for (let i = 0; i < ips.length; i++) {
-    const ip = ips[i];
-    fs.writeFileSync(
-      file,
-      `*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n`,
-      "utf-8"
-    );
+    const ip = ips[i].trim()
+    try {
+      const command = `*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
+      process.stdout.write(command);
+    } catch (error) {
+      console.error("Error reading file:", error);
+    }
   }
 }
 const ips = fs.readFileSync(sourcePath, "utf-8").split("\n");
-console.log("ips:", ips);
-console.log("ips.length:", ips.length);
 generateResp(ips);
