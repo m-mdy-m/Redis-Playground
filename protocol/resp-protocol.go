@@ -1,87 +1,45 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
 	"io/ioutil"
+	"bytes"
+	"fmt"
 	"os"
 	"strings"
 )
 
 const (
 	sourcePath = "ip.source.txt"
-	targetPath = "ips.txt"
+	setCommand = "*3\r\n$3\r\nSET\r\n$"
 )
 
-// IP represents a single IP address with validation capabilities
-type IP struct {
-	address string
-}
-
-// NewIP creates a new IP object and validates the address format
-func NewIP(address string) (*IP, error) {
-	// Use a library like net.ParseIP for robust validation
-	// Replace with your preferred validation logic
-	if !strings.Contains(address, ".") && !strings.Contains(address, ":") {
-		return nil, fmt.Errorf("invalid IP format: %s", address)
-	}
-	return &IP{address: address}, nil
-}
-
-// generateResp takes a slice of validated IPs and writes them to a file in RESP format
-func generateResp(ips []*IP, targetFile *os.File) error {
+func generateResp(ips []string) {
 	for _, ip := range ips {
-		n, err := fmt.Fprintf(targetFile, "*3\r\n$3\r\nSET\r\n%d\r\n%s\r\n$1\r\n1\r\n", len(ip.address), ip.address)
-		if err != nil {
-			return err
-		}
-		if n != 36 {
-			return fmt.Errorf("unexpected number of bytes written: %d", n)
-		}
+		trimmedIP := strings.TrimSpace(ip)
+		command := fmt.Sprintf("%s%d\r\n%s\r\n$1\r\n1\r\n", setCommand, len(trimmedIP), trimmedIP)
+		fmt.Print(command)
 	}
-	return nil
 }
-
 func main() {
-	// Open source file for reading
-	sourceFile, err := os.Open(sourcePath)
-    if err != nil {
-        fmt.Println("Error opening source file:", err)
-        return
-    }
-    defer sourceFile.Close()
-
-	// Read file content
-	data, err := ioutil.ReadAll(sourceFile)
+	data, err := ioutil.ReadFile(sourcePath)
 	if err != nil {
-		fmt.Println("Error reading source file:", err)
+		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		return
 	}
 
-	// Split data into lines and validate each IP
-	var validIPs []*IP
-	for _, line := range strings.Split(string(data), "\n") {
-		ip, err := NewIP(line)
-		if err != nil {
-			fmt.Printf("Warning: Ignoring invalid IP: %s (%s)\n", line, err)
-			continue
-		}
-		validIPs = append(validIPs, ip)
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	scanner.Split(bufio.ScanLines)
+
+	var ips []string
+	for scanner.Scan() {
+		ips = append(ips, scanner.Text())
 	}
 
-	// Open target file for writing
-	targetFile, err := os.Create(targetPath)
-	if err != nil {
-		fmt.Println("Error creating target file:", err)
-		return
-	}
-	defer targetFile.Close()
-
-	// Generate and write RESP data
-	err = generateResp(validIPs, targetFile)
-	if err != nil {
-		fmt.Println("Error generating RESP:", err)
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		return
 	}
 
-	fmt.Println("RESP data written successfully!")
+	generateResp(ips)
 }
