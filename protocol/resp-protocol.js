@@ -12,23 +12,14 @@
 const fs = require("fs");
 const path = require("path");
 const sourcePath = path.join(__dirname, "ip.source.txt");
-function generateResp(ips) {
+
+async function generateResp() {
+  const data = fs.readFileSync(sourcePath, "utf-8");
+  const ips = data.split("\n");
   for (const ip of ips) {
-    try {
-      const command = `*3\r\n$3\r\nSET\r\n$${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
-      process.stdout.write(`${command}`);
-    } catch (error) {
-      console.error("Error reading file:", error);
-    }
+    process.stdout.write(
+      `*3\r\n$3\r\nSET\r\n$${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`
+    );
   }
 }
-
-fs.readFile(sourcePath, "utf-8", (err, data) => {
-  if (err) {
-    console.error("Error reading file:", err);
-    return;
-  }
-
-  const ips = data.split("\n");
-  generateResp(ips);
-});
+generateResp();
