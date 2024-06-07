@@ -13,7 +13,7 @@ const fs = require("fs");
 const path = require("path");
 const sourcePath = path.join(__dirname, "ip.source.txt");
 
-async function generateResp() {
+function generateResp() {
   const data = fs.readFileSync(sourcePath, "utf-8");
   const ips = data.split("\n");
   for (const ip of ips) {
