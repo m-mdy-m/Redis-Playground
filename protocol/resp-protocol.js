@@ -3,7 +3,7 @@
  * @example
  * SET <ip> 1
  * SET 10.0.0.134 1
- * RESP -> *3\r\n$3\r\nSET\r\n$10\r\n10.0.0.134$1\r\n1\r\n
+ * RESP -> *3\r\n$3\r\nSET\r\n$10\r\n10.0.0.134\r\n$1\r\n1\r\n
  * @first_step
  * Read File
  * @Two_step
@@ -18,11 +18,19 @@ function generateResp(ips) {
     const ip = ips[i].trim()
     try {
       const command = `*3\r\n$3\r\nSET\r\n${ip.length}\r\n${ip}\r\n$1\r\n1\r\n`;
-      process.stdout.write(command)
+      process.stdout.write(`${command}`);
     } catch (error) {
       console.error("Error reading file:", error);
     }
   }
 }
-const ips = fs.readFileSync(sourcePath, "utf-8").split("\n");
-generateResp(ips);
+
+fs.readFile(sourcePath, "utf-8", (err, data) => {
+  if (err) {
+    console.error("Error reading file:", err);
+    return;
+  }
+
+  const ips = data.split("\n");
+  generateResp(ips);
+});
