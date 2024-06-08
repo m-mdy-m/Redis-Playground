@@ -158,3 +158,48 @@ slaveof <master_ip> 6379  # Replace with master's IP address
 * **Data Persistence:** Both master and replicas should be configured with persistence (RDB or AOF) to ensure data is not lost on restarts.
 * **Replica Monitoring:** Monitor replica health and connectivity to ensure they're synchronized with the master
 
+**Method 1: Using the `SLAVEOF NO ONE` Command**
+
+1. Connect to the slave server using the `redis-cli` tool. You'll need to specify the slave's port number if it's different from the default (6379).
+
+   ```bash
+   redis-cli -p <slave_port>
+   ```
+
+2.  Execute the following command:
+
+   ```
+   SLAVEOF NO ONE
+   ```
+
+This command instructs the slave to stop replicating from any master. It will still be running as a Redis server, but it won't receive updates from the master anymore. The existing data on the slave will remain intact.
+
+**Method 2: Stopping the Slave Server**
+
+Simply stopping the slave server process will effectively disconnect it from the master. However, this is a less controlled approach compared to `SLAVEOF NO ONE`.
+
+1. Use the appropriate command for your operating system to stop the slave server process. The exact command will depend on how you started your Redis instance (e.g., using a service manager like systemd or manually running the `redis-server` command).
+
+   - For systemd-based systems:
+
+     ```bash
+     sudo systemctl stop redis@<slave_port>.service
+     ```
+
+   - For manually started processes:
+
+     ```bash
+     ps aux | grep redis-server | grep <slave_port>  # Find the process ID
+     kill <process_id>
+     ```
+
+**Important Considerations:**
+
+- Once disconnected, the slave won't receive updates from the master. It will maintain the data it had at the time of disconnection.
+- If you intend to reconnect the slave to the same master later, you'll need to use the `SLAVEOF` command again to re-establish the replication connection and initiate a new synchronization process.
+- Stopping the slave process might not be the cleanest approach as it can leave the slave in an inconsistent state if it was actively replicating at the time.
+
+**Additional Notes:**
+
+- If you're using Redis Sentinel for automated failover, the sentinel will eventually mark the disconnected slave as "disconnected" and won't try to promote it during a master failure.
+- You can use the `INFO replication` command to verify the slave's current replication status after disconnection.
