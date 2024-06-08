@@ -203,3 +203,75 @@ Simply stopping the slave server process will effectively disconnect it from the
 
 - If you're using Redis Sentinel for automated failover, the sentinel will eventually mark the disconnected slave as "disconnected" and won't try to promote it during a master failure.
 - You can use the `INFO replication` command to verify the slave's current replication status after disconnection.
+## Master-Slave Replication in Redis
+
+### Overview
+
+Redis supports master-slave replication to enhance availability and scalability. In this setup, a single master node handles all write operations, while multiple slave nodes replicate data from the master and handle read operations. This ensures data redundancy and load distribution.
+
+### How It Works
+
+#### Connection and Identification
+
+1. **Initial Setup**:
+   - A Redis instance is designated as the master. Other Redis instances are configured as slaves.
+   - Slaves are configured to replicate data from the master using the `slaveof` command or through configuration settings in `redis.conf`.
+
+2. **Connecting to the Master**:
+   - Upon startup, a slave connects to the master using the IP address and port specified in its configuration.
+   - The slave sends a `PING` command to the master. If the master responds with `PONG`, the connection is considered successful.
+
+3. **Full Synchronization**:
+   - During the initial connection, the slave requests a synchronization with the master.
+   - The master creates a snapshot of the data (RDB file) and sends it to the slave. This is called the "full sync."
+   - The slave saves this snapshot to disk, loads it into memory, and starts processing updates from the master.
+
+4. **Replication IDs**:
+   - **`master_replid`**: This is a unique identifier for the replication stream from the master. It remains the same across all slaves replicating from the same master.
+   - **`master_repl_offset`**: This is the replication offset, indicating the position up to which the slave has processed the replication stream. Each slave has a different offset value as they may lag behind the master to varying degrees.
+
+#### Data Replication and Stability
+
+1. **Continuous Replication**:
+   - After the full sync, the master sends any new write commands to all connected slaves.
+   - Slaves process these commands in the order they are received, ensuring they have an identical dataset as the master.
+
+2. **Write Operations**:
+   - All write operations (e.g., setting a key-value pair) are performed on the master.
+   - These operations are then propagated to the slaves. Slaves cannot perform write operations directly, ensuring data consistency.
+
+3. **Handling Disconnects**:
+   - If a slave loses connection to the master, it will attempt to reconnect.
+   - Upon reconnection, the slave requests a partial resynchronization using its last known offset.
+   - If the master can fulfill this request, it sends only the missing data (partial sync). If not, a full sync is performed again.
+
+### Slave Promotion to Master
+
+1. **Promotion Process**:
+   - When the master fails, one of the slaves can be promoted to master to ensure continued availability.
+   - This can be done manually using the `SLAVEOF NO ONE` command on the chosen slave or automatically through a failover mechanism provided by Redis Sentinel.
+
+2. **Replication ID Change**:
+   - The new master generates a new `master_replid`. Slaves that were connected to the old master need to be reconfigured to replicate from the new master.
+
+3. **Synchronization**:
+   - Upon promotion, the new master will handle all write operations, and the remaining slaves will start replicating from this new master.
+   - The new master ensures that it has the most up-to-date data before accepting writes to maintain data consistency.
+
+### Stability and Consistency
+
+1. **Heartbeat Mechanism**:
+   - Slaves send periodic `PING` commands to the master to check connectivity.
+   - The master responds with `PONG`, ensuring the connection remains alive.
+
+2. **Acknowledgements**:
+   - Slaves acknowledge the receipt of replication data by sending their replication offset to the master.
+   - The master uses this information to track the replication status of each slave.
+
+3. **Consistency Guarantees**:
+   - Redis ensures that data written to the master is propagated to slaves in a consistent and orderly manner.
+   - Slaves are always behind the master by a small margin, depending on network latency and load.
+
+### Summary
+
+Redis master-slave replication ensures high availability and scalability by distributing read operations across multiple slaves while centralizing write operations on a single master. Slaves connect to the master, perform initial synchronization, and then continuously replicate changes. In case of master failure, a slave can be promoted to master, ensuring minimal downtime. This setup is designed to maintain data consistency and stability through various mechanisms, including heartbeats and replication offsets.
