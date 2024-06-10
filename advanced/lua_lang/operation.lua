@@ -72,3 +72,9 @@ m1,m2,m3,m4,m5 = 10,20,30,.5,10
 -- print(not false) -- true
 
 -- print(4 or 6) -- 4
+
+--- String Operation
+
+msg3 = "test"
+msg4 = "test4"
+print(msg3 .. msg4)
