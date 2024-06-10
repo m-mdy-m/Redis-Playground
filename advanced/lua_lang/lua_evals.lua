@@ -40,7 +40,7 @@ EVAL "return \"Hello Lua!\"" 0
 -- 2. Lets pass a key to the script
 
 -- The arguments can be accessed in the form of KEYS global variables
---  KEYS[1] means 1st argument
+--  KEYS[1] means 1st key
 
 SET name "Kim"
 
