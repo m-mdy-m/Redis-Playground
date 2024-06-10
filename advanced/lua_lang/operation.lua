@@ -36,3 +36,13 @@ b = "this is a second line"
 -- \'
 
 print("first line \nsecond line")
+
+
+html = [[
+    <html>
+        <head>
+            <title>Test Title</title>
+        </head>
+    </html>
+]]
+-- print(html)
