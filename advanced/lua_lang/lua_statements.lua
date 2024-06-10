@@ -64,5 +64,24 @@ days = {
 
 for i=1 , #days
 do
-    print(days[#days +1 -i])
+    -- print(days[#days +1 -i])
 end
+
+numbers = {20,30,40,50}
+
+sum,counter = 0,1
+-- while counter <= #numbers
+-- do
+--     sum = sum + numbers[counter]
+--     counter = counter + 1
+-- end
+
+
+-- print("This total sum is :",sum)
+
+repeat sum = sum + numbers[counter]
+    counter = counter + 1
+    
+until counter > #numbers
+
+print("The total sum is :",sum)
