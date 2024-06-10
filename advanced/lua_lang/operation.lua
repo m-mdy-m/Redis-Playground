@@ -13,7 +13,7 @@ n2 =0.4
 n3 = 4.57e-3
 n4 = 0.3e12
 n5 = 5e+20
-print(n1,n2,n3,n4,n5)
+-- print(n1,n2,n3,n4,n5)
 
 
 -- Strings
@@ -35,7 +35,7 @@ b = "this is a second line"
 -- \""
 -- \'
 
-print("first line \nsecond line")
+-- print("first line \nsecond line")
 
 
 html = [[
@@ -46,3 +46,11 @@ html = [[
     </html>
 ]]
 -- print(html)
+
+-- line = io.read()
+-- print(line)
+x = "one Strings"
+y = string.gsub(x,"one","two")
+
+print(x)
+print(y)
