@@ -52,5 +52,16 @@ html = [[
 x = "one Strings"
 y = string.gsub(x,"one","two")
 
-print(x)
-print(y)
+-- print(x)
+-- print(y)
+
+-- Operation
+
+m1,m2,m3,m4 = 10,20,30,.5
+
+print(
+    '+ ->',m1 + m2,
+    '* ->',m1 * m2,
+    '/ ->',m1 / m3,
+    '- ->',m1 - m2
+)
