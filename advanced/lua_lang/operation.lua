@@ -59,11 +59,16 @@ y = string.gsub(x,"one","two")
 
 m1,m2,m3,m4,m5 = 10,20,30,.5,10
 
-print(
-    '+ ->',m1 + m2,
-    '* ->',m1 * m2,
-    '/ ->',m1 / m3,
-    '- ->',m1 - m2,
-    "<=  ->", m1 <= m2,
-    "~=  ->", m1 ~= m5
-)
+-- print(
+--     '+ ->',m1 + m2,
+--     '* ->',m1 * m2,
+--     '/ ->',m1 / m3,
+--     '- ->',m1 - m2,
+--     "<=  ->", m1 <= m2,
+--     "~=  ->", m1 ~= m5
+-- )
+-- print (4 and 6) -- The highest value
+-- print(not nil) -- true
+-- print(not false) -- true
+
+-- print(4 or 6) -- 4
