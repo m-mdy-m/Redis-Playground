@@ -22,8 +22,47 @@ end
 
 -- Create 50 new Elm
 t = {}
-for i=1,50
+-- for i=1,50
+-- do
+--     t[i]=i+10
+-- end
+-- print(t[1],t[2])
+
+a= {}
+-- for i =1,5
+-- do
+--     a[i] = io.read()
+-- end
+-- print(a[1],a[2])
+
+-- traverse all values in an array of table
+
+t1 = {1,2,3,4,5,6}
+for i,v in ipairs(t1)
 do
-    t[i]=i+10
+    -- print(v)
+    print(i)
 end
-print(t[1],t[2])
+
+
+-- print reverse days of the week
+
+days = {
+    "monday",
+    "tuesday",
+    "wendsday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday"
+}
+-- for i=#days , 1,-1
+-- do
+--     value = days[i]
+--     print(i .. ":" .. value)
+-- end
+
+for i=1 , #days
+do
+    print(days[#days +1 -i])
+end
