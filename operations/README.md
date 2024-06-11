@@ -1,4 +1,4 @@
-##  Database Designs
+## Database Designs
 
 Redis, an in-memory data store, excels at handling frequently accessed data structures with high performance. Here's how to effectively translate relational database (RDBMS) tables into Redis data structures, along with essential considerations and a real-world example.
 
