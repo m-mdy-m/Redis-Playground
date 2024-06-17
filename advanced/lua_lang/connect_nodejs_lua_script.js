@@ -16,15 +16,15 @@ const server = http.createServer(async (req, res) => {
   if (req.url === "/add") {
     try {
       const reply = await client.eval(lua.script, {
-        keys: ["key1"],
-        args: ["value2"],
+        arguments: ["value12"],
+        keys: ["key12"],
       });
       console.log("Reply:", reply);
       res.write(` key : ${reply[0]} value: ${reply[1]}`);
       res.end();
     } catch (error) {
       console.error(error);
-      res.writeHead(500, { "Content-Type": "text/plain" }); 
+      res.writeHead(500, { "Content-Type": "text/plain" });
       res.write("An error occurred while processing your request.");
       res.end();
     }

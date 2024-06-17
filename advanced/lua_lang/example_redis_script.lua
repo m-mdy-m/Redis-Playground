@@ -23,7 +23,7 @@ end
 
 -- redis-cli --eval ./example_redis_script.lua setKey1 , value2
 
--- Return :
+-- Return : 
 -- 1) "setKey1"
 -- 2) "value2"
 ------------------------------------
